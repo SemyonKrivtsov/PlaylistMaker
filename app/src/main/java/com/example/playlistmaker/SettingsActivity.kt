@@ -1,6 +1,10 @@
 package com.example.playlistmaker
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,5 +24,46 @@ class SettingsActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
+        val sharingButton = findViewById<ImageButton>(R.id.shareButton)
+        sharingButton.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.setType("text/plain")
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.course_url))
+            startActivity(Intent.createChooser(shareIntent, null))
+        }
+
+        val supportButton = findViewById<ImageButton>(R.id.supportButton)
+        supportButton.setOnClickListener {
+            val supportIntent = Intent(Intent.ACTION_SENDTO)
+            supportIntent.setData(Uri.parse("mailto:"))
+            val email = getString(R.string.email)
+            val message = getString(R.string.text_message)
+            val subject = getString(R.string.subject)
+
+            supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            supportIntent.putExtra(Intent.EXTRA_TEXT, message)
+            supportIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+
+            if (supportIntent.resolveActivity(packageManager) != null) {
+                startActivity(supportIntent)
+            } else {
+                val errorMsg = getString(R.string.error_msg_no_email_client)
+                Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val offerButton = findViewById<ImageButton>(R.id.offerButton)
+        offerButton.setOnClickListener {
+            val offerUri = getString(R.string.practicum_offer_url)
+            val offerIntent = Intent(Intent.ACTION_VIEW, Uri.parse(offerUri))
+
+            if (offerIntent.resolveActivity(packageManager) != null) {
+                startActivity(offerIntent)
+            } else {
+                val errorMsg = getString(R.string.error_msg_no_browsers)
+                Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
