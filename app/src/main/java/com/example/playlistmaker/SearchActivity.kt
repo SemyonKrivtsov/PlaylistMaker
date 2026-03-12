@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
+    private var searchValue: String = EMPTY_STRING
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,18 +32,36 @@ class SearchActivity : AppCompatActivity() {
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
 
         clearButton.setOnClickListener {
-            inputEditText.setText("")
+            inputEditText.setText(EMPTY_STRING)
         }
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
+                searchValue = s.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {}
         }
         inputEditText.addTextChangedListener(textWatcher)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SAVED_QUERY, searchValue)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        val inputEditText = findViewById<EditText>(R.id.inputEditText)
+        val restoredQuery = savedInstanceState.getString(SAVED_QUERY)
+
+        if (!restoredQuery.isNullOrEmpty()) {
+            searchValue = savedInstanceState.getString(SAVED_QUERY, EMPTY_STRING)
+            inputEditText.setText(searchValue)
+        }
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -50,5 +70,10 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    companion object {
+        const val SAVED_QUERY = "SAVED_QUERY"
+        const val EMPTY_STRING = ""
     }
 }
