@@ -1,15 +1,16 @@
 package com.example.playlistmaker
 
+import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
@@ -33,18 +34,15 @@ class SearchActivity : AppCompatActivity() {
 
         clearButton.setOnClickListener {
             inputEditText.setText(EMPTY_STRING)
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
         }
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = clearButtonVisibility(s)
-                searchValue = s.toString()
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
+        inputEditText.doOnTextChanged { text, start, before, count ->
+            clearButton.isVisible = !text.isNullOrEmpty()
+            searchValue = text.toString()
         }
-        inputEditText.addTextChangedListener(textWatcher)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -61,14 +59,6 @@ class SearchActivity : AppCompatActivity() {
         if (!restoredQuery.isNullOrEmpty()) {
             searchValue = savedInstanceState.getString(SAVED_QUERY, EMPTY_STRING)
             inputEditText.setText(searchValue)
-        }
-    }
-
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
         }
     }
 

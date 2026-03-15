@@ -28,18 +28,27 @@
         <Button
             android:id="@+id/button_search"
             style="@style/MainButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_layout_height"
+            android:layout_weight="@dimen/main_weight"
             android:text="@string/search"
             app:icon="@drawable/ic_search_24" />
 
         <Button
             android:id="@+id/button_library"
             style="@style/MainButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_layout_height"
+            android:layout_weight="@dimen/main_weight"
             android:text="@string/library"
             app:icon="@drawable/ic_library_24" />
 
         <Button
             android:id="@+id/button_settings"
             style="@style/MainButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_layout_height"
+            android:layout_weight="@dimen/main_weight"
             android:text="@string/settings"
             app:icon="@drawable/ic_settings_24" />
 

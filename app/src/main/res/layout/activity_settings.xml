@@ -11,6 +11,8 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,52 +30,83 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <FrameLayout style="@style/SettingsFrameLayoutStyle">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_layout_height">
 
             <TextView
                 style="@style/SettingsTextViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/dark_theme" />
 
             <Switch
-                style="@style/SettingsItemStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="3dp"
                 android:checked="true"
                 android:thumbTint="@color/green" />
         </FrameLayout>
 
-        <FrameLayout style="@style/SettingsFrameLayoutStyle">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_layout_height">
 
             <TextView
                 style="@style/SettingsTextViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/share_app" />
 
             <ImageButton
                 android:id="@+id/shareButton"
                 style="@style/SettingsIconStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
                 android:src="@drawable/ic_share_24" />
         </FrameLayout>
 
-        <FrameLayout style="@style/SettingsFrameLayoutStyle">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_layout_height">
 
             <TextView
                 style="@style/SettingsTextViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/write_support" />
 
             <ImageButton
                 android:id="@+id/supportButton"
                 style="@style/SettingsIconStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
                 android:src="@drawable/ic_support_24" />
         </FrameLayout>
 
-        <FrameLayout style="@style/SettingsFrameLayoutStyle">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_layout_height">
 
             <TextView
                 style="@style/SettingsTextViewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/user_agreement" />
 
             <ImageButton
                 android:id="@+id/offerButton"
                 style="@style/SettingsIconStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
                 android:src="@drawable/ic_arrow_forward_24" />
         </FrameLayout>
     </LinearLayout>

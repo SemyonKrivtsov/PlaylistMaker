@@ -2,8 +2,6 @@
 <resources>
 
     <style name="ToolbarStyle">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:backgroundTint">?attr/colorPrimary</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
@@ -18,9 +16,6 @@
     </style>
 
     <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/main_layout_height</item>
-        <item name="android:layout_weight">@dimen/main_weight</item>
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/main_font_size</item>
@@ -32,25 +27,11 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
-    <style name="SettingsFrameLayoutStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/settings_layout_height</item>
-    </style>
-
-    <style name="SettingsItemStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">end|center_vertical</item>
-    </style>
-
-    <style name="SettingsIconStyle" parent="SettingsItemStyle">
+    <style name="SettingsIconStyle">
         <item name="android:backgroundTint">?attr/colorPrimary</item>
     </style>
 
     <style name="SettingsTextViewStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">start|center_vertical</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:textSize">@dimen/settings_font_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>

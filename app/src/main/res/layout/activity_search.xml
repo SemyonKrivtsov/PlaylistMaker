@@ -11,6 +11,8 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,8 +42,8 @@
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="12dp"
-            android:textColor="@color/search_text"
-            android:textColorHint="@color/search_text" />
+            android:textColor="@color/black"
+            android:textColorHint="@color/search_hint" />
 
         <ImageView
             android:id="@+id/clearIcon"
