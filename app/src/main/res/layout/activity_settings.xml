@@ -5,20 +5,19 @@
     android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/colorPrimary"
     tools:context=".SettingsActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        style="@style/ToolbarStyle"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
         app:title="@string/settings"
-        android:backgroundTint="@color/white" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearanceStyle" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,22 +25,21 @@
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="12dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/settings_layout_height">
 
             <TextView
+                style="@style/SettingsTextViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
-                android:text="@string/dark_theme"
-                android:textColor="@color/dark_black"
-                android:textSize="@dimen/settings_font_size" />
+                android:text="@string/dark_theme" />
 
             <Switch
                 android:layout_width="wrap_content"
@@ -57,18 +55,18 @@
             android:layout_height="@dimen/settings_layout_height">
 
             <TextView
+                style="@style/SettingsTextViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
-                android:text="@string/share_app"
-                android:textColor="@color/dark_black"
-                android:textSize="@dimen/settings_font_size" />
+                android:text="@string/share_app" />
 
             <ImageButton
+                android:id="@+id/shareButton"
+                style="@style/SettingsIconStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:backgroundTint="@color/white"
                 android:src="@drawable/ic_share_24" />
         </FrameLayout>
 
@@ -77,18 +75,18 @@
             android:layout_height="@dimen/settings_layout_height">
 
             <TextView
+                style="@style/SettingsTextViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
-                android:text="@string/write_support"
-                android:textColor="@color/dark_black"
-                android:textSize="@dimen/settings_font_size" />
+                android:text="@string/write_support" />
 
             <ImageButton
+                android:id="@+id/supportButton"
+                style="@style/SettingsIconStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:backgroundTint="@color/white"
                 android:src="@drawable/ic_support_24" />
         </FrameLayout>
 
@@ -97,18 +95,18 @@
             android:layout_height="@dimen/settings_layout_height">
 
             <TextView
+                style="@style/SettingsTextViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
-                android:text="@string/user_agreement"
-                android:textColor="@color/dark_black"
-                android:textSize="@dimen/settings_font_size" />
+                android:text="@string/user_agreement" />
 
             <ImageButton
+                android:id="@+id/offerButton"
+                style="@style/SettingsIconStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:backgroundTint="@color/white"
                 android:src="@drawable/ic_arrow_forward_24" />
         </FrameLayout>
     </LinearLayout>
