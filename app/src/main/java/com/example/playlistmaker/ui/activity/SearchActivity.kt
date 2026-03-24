@@ -18,7 +18,7 @@ import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
     private var searchValue: String = EMPTY_STRING
-    val tracks: ArrayList<Track> = arrayListOf(
+    val tracks: List<Track> = listOf(
         Track(
             "Smells Like Teen Spirit",
             "Nirvana",

@@ -18,7 +18,6 @@
             android:layout_height="45dp"
             android:layout_marginStart="13dp"
             android:layout_marginTop="@dimen/image_padding"
-            android:layout_marginEnd="@dimen/image_padding"
             android:layout_marginBottom="@dimen/image_padding"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_track_placeholder" />
