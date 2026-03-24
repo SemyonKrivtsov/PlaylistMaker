@@ -3,4 +3,6 @@
     <color name="background">#1A1B22</color>
     <color name="search_background">#FFFFFF</color>
     <color name="search_hint">#1A1B22</color>
+    <color name="track_title">#FFFFFF</color>
+    <color name="track_subtitle">#AEAFB4</color>
 </resources>

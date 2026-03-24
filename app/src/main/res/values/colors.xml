@@ -7,4 +7,6 @@
     <color name="green">#00D6C3</color>
     <color name="search_background">#E6E8EB</color>
     <color name="search_hint">#AEAFB4</color>
+    <color name="track_title">#000000</color>
+    <color name="track_subtitle">#AEAFB4</color>
 </resources>
