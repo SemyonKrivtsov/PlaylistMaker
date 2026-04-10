@@ -1,9 +1,13 @@
 package com.example.playlistmaker.ui.activity
 
 import android.os.Bundle
+import android.util.Log
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,45 +15,37 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.R
+import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.networking.SearchResponse
+import com.example.playlistmaker.networking.TracksApiService
 import com.example.playlistmaker.ui.track_recycler_view.TrackAdapter
 import com.google.android.material.appbar.MaterialToolbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import kotlin.collections.orEmpty
+
+const val ITUNES_BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var errorImageView: ImageView
+    private lateinit var errorTextView: TextView
+    private lateinit var reloadButton: MaterialButton
+    private lateinit var tracksApiService: TracksApiService
+
     private var searchValue: String = EMPTY_STRING
-    val tracks: List<Track> = listOf(
-        Track(
-            "Smells Like Teen Spirit",
-            "Nirvana",
-            "5:01",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Billie Jean",
-            "Michael Jackson",
-            "4:35",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Stayin' Alive",
-            "Bee Gees",
-            "4:10",
-            "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Whole Lotta Love",
-            "Led Zeppelin",
-            "5:33",
-            "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"
-        ),
-        Track(
-            "Sweet Child O'Mine",
-            "Guns N' Roses",
-            "5:03",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"
-        )
-    )
+    private val tracks: MutableList<Track> = mutableListOf()
+
+    private val trackAdapter = TrackAdapter(tracks)
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(ITUNES_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +68,7 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager =
                 getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
+            hideErrorLayout()
         }
 
         inputEditText.doOnTextChanged { text, start, before, count ->
@@ -79,9 +76,27 @@ class SearchActivity : AppCompatActivity() {
             searchValue = text.toString()
         }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val trackAdapter = TrackAdapter(tracks)
+        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                searchRequest()
+                true
+            } else {
+                false
+            }
+        }
+
+        recyclerView = findViewById(R.id.recyclerView)
+        errorImageView = findViewById(R.id.errorImage)
+        errorTextView = findViewById(R.id.errorMessage)
+        reloadButton = findViewById(R.id.refreshButton)
+
+        tracksApiService = retrofit.create<TracksApiService>()
         recyclerView.adapter = trackAdapter
+        hideErrorLayout()
+
+        reloadButton.setOnClickListener {
+            searchRequest()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -99,6 +114,72 @@ class SearchActivity : AppCompatActivity() {
             searchValue = savedInstanceState.getString(SAVED_QUERY, EMPTY_STRING)
             inputEditText.setText(searchValue)
         }
+    }
+
+    private fun showTracks(newTracks: List<Track>) {
+        hideErrorLayout()
+        tracks.addAll(newTracks)
+        recyclerView.isVisible = true
+        trackAdapter.notifyDataSetChanged()
+    }
+
+    private fun hideTracks() {
+        tracks.clear()
+        recyclerView.isVisible = false
+        trackAdapter.notifyDataSetChanged()
+    }
+
+    private fun hideErrorLayout() {
+        hideTracks()
+        errorImageView.isVisible = false
+        errorTextView.isVisible = false
+        reloadButton.isVisible = false
+    }
+
+    private fun showNotFoundError() {
+        hideTracks()
+        errorImageView.setImageResource(R.drawable.ic_not_found_120)
+        errorTextView.setText(R.string.notFoundTracksMsg)
+        errorImageView.isVisible = true
+        errorTextView.isVisible = true
+        reloadButton.isVisible = false
+    }
+
+    private fun showNetworkError() {
+        hideTracks()
+        errorImageView.setImageResource(R.drawable.ic_network_failed_120)
+        errorTextView.setText(R.string.network_failed_msg)
+        errorImageView.isVisible = true
+        errorTextView.isVisible = true
+        reloadButton.isVisible = true
+    }
+
+    private fun searchRequest() {
+        tracksApiService.search(searchValue).enqueue(object : Callback<SearchResponse> {
+            override fun onResponse(
+                call: Call<SearchResponse>,
+                response: Response<SearchResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val foundTracks = response.body()?.results.orEmpty()
+                    if (foundTracks.isEmpty()) {
+                        showNotFoundError()
+                        Log.d("EmptyTrackResult", "Response body: ${response.body()}")
+                    } else {
+                        showTracks(foundTracks)
+                    }
+                } else {
+                    showNetworkError()
+                    val errorJson = response.errorBody()?.string()
+                    Log.e("NetworkError", "Error: $errorJson")
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                showNetworkError()
+                Log.e("NetworkError", "Error (onFailure): ${t.message}")
+            }
+        })
     }
 
     companion object {
