@@ -20,7 +20,6 @@ import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.networking.SearchResponse
 import com.example.playlistmaker.networking.TracksApiService
 import com.example.playlistmaker.ui.track_recycler_view.TrackAdapter
-import com.example.playlistmaker.utils.AppConfig.ITUNES_BASE_URL
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +28,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import kotlin.collections.orEmpty
+
+const val ITUNES_BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -159,7 +160,7 @@ class SearchActivity : AppCompatActivity() {
                 call: Call<SearchResponse>,
                 response: Response<SearchResponse>
             ) {
-                if (response.code() == 200) {
+                if (response.isSuccessful) {
                     val foundTracks = response.body()?.results.orEmpty()
                     if (foundTracks.isEmpty()) {
                         showNotFoundError()
