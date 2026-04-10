@@ -14,4 +14,7 @@
     <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/</string>
     <string name="error_msg_no_email_client">Почтовый клиент не найден</string>
     <string name="error_msg_no_browsers">Браузер не найден</string>
+    <string name="notFoundTracksMsg">Ничего не нашлось</string>
+    <string name="network_failed_msg">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="refresh">Обновить</string>
 </resources>

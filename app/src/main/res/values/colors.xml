@@ -9,4 +9,7 @@
     <color name="search_hint">#AEAFB4</color>
     <color name="track_title">#000000</color>
     <color name="track_subtitle">#AEAFB4</color>
+    <color name="search_error_msg">#1A1B22</color>
+    <color name="reload_button_text">#FFFFFF</color>
+    <color name="reload_button_background">#1A1B22</color>
 </resources>
