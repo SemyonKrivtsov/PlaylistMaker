@@ -5,7 +5,7 @@
     <color name="search_hint">#1A1B22</color>
     <color name="track_title">#FFFFFF</color>
     <color name="track_subtitle">#AEAFB4</color>
-    <color name="search_error_msg">#FFFFFF</color>
+    <color name="search_msg">#FFFFFF</color>
     <color name="reload_button_text">#1A1B22</color>
-    <color name="reload_button_background">#FFFFFF</color>
+    <color name="button_background">#FFFFFF</color>
 </resources>

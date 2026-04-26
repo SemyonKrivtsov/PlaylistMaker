@@ -41,7 +41,8 @@
                 android:layout_gravity="start|center_vertical"
                 android:text="@string/dark_theme" />
 
-            <Switch
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/themeSwitcher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
