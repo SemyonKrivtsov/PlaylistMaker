@@ -9,8 +9,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +67,13 @@ class SettingsActivity : AppCompatActivity() {
                 val errorMsg = getString(R.string.error_msg_no_browsers)
                 Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        val app = applicationContext as App
+        themeSwitcher.isChecked = app.darkTheme
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            app.switchTheme(checked)
         }
     }
 }

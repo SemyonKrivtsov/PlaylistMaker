@@ -10,12 +10,14 @@ import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.helpers.SearchHistory
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.networking.SearchResponse
 import com.example.playlistmaker.networking.TracksApiService
@@ -29,10 +31,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import kotlin.collections.orEmpty
 
-const val ITUNES_BASE_URL = "https://itunes.apple.com"
-
 class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var historyContainer: ConstraintLayout
     private lateinit var errorImageView: ImageView
     private lateinit var errorTextView: TextView
     private lateinit var reloadButton: MaterialButton
@@ -40,8 +42,20 @@ class SearchActivity : AppCompatActivity() {
 
     private var searchValue: String = EMPTY_STRING
     private val tracks: MutableList<Track> = mutableListOf()
+    private val historyTracks: MutableList<Track> = mutableListOf()
 
-    private val trackAdapter = TrackAdapter(tracks)
+    private val searchHistory by lazy {
+        SearchHistory(getSharedPreferences(SEARCH_HISTORY, MODE_PRIVATE))
+    }
+
+    private val trackAdapter = TrackAdapter(tracks) {
+        searchHistory.add(it)
+    }
+
+    private val historyAdapter = TrackAdapter(historyTracks) {
+        searchHistory.add(it)
+        updateTrackHistory()
+    }
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -62,6 +76,14 @@ class SearchActivity : AppCompatActivity() {
 
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
+        historyContainer = findViewById<ConstraintLayout>(R.id.history)
+        historyRecyclerView = findViewById<RecyclerView>(R.id.historyRecyclerView)
+        val clearHistoryButton = findViewById<MaterialButton>(R.id.clearHistory)
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clear()
+            historyContainer.isVisible = false
+        }
 
         clearButton.setOnClickListener {
             inputEditText.setText(EMPTY_STRING)
@@ -74,6 +96,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.doOnTextChanged { text, start, before, count ->
             clearButton.isVisible = !text.isNullOrEmpty()
             searchValue = text.toString()
+            historyContainer.isVisible = updateTrackHistory()
         }
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -85,6 +108,10 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+            historyContainer.isVisible = updateTrackHistory()
+        }
+
         recyclerView = findViewById(R.id.recyclerView)
         errorImageView = findViewById(R.id.errorImage)
         errorTextView = findViewById(R.id.errorMessage)
@@ -92,11 +119,13 @@ class SearchActivity : AppCompatActivity() {
 
         tracksApiService = retrofit.create<TracksApiService>()
         recyclerView.adapter = trackAdapter
+        historyRecyclerView.adapter = historyAdapter
         hideErrorLayout()
 
         reloadButton.setOnClickListener {
             searchRequest()
         }
+        updateTrackHistory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -163,6 +192,7 @@ class SearchActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val foundTracks = response.body()?.results.orEmpty()
                     if (foundTracks.isEmpty()) {
+                        historyContainer.isVisible = false
                         showNotFoundError()
                         Log.d("EmptyTrackResult", "Response body: ${response.body()}")
                     } else {
@@ -182,8 +212,27 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
+    private fun canUpdateTrackHistory(): Boolean {
+        val inputEditText = findViewById<EditText>(R.id.inputEditText)
+        return inputEditText.hasFocus() && inputEditText.text.isNullOrEmpty()
+    }
+
+    private fun updateTrackHistory(): Boolean {
+        val history = searchHistory.getHistory()
+        val showHistory = canUpdateTrackHistory() && history.isNotEmpty()
+
+        if (showHistory) {
+            historyTracks.clear()
+            historyTracks.addAll(history)
+            historyAdapter.notifyDataSetChanged()
+        }
+        return showHistory
+    }
+
     companion object {
-        const val SAVED_QUERY = "SAVED_QUERY"
-        const val EMPTY_STRING = ""
+        private const val SAVED_QUERY = "SAVED_QUERY"
+        private const val EMPTY_STRING = ""
+        private const val SEARCH_HISTORY = "search_history"
+        private const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 }
