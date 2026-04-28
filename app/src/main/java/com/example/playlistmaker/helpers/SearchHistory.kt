@@ -3,6 +3,7 @@ package com.example.playlistmaker.helpers
 import android.content.SharedPreferences
 import com.example.playlistmaker.model.Track
 import com.google.gson.Gson
+import androidx.core.content.edit
 
 class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
@@ -30,9 +31,9 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     fun clear() {
         cachedHistory.clear()
-        sharedPreferences.edit()
-            .remove(TRACK_HISTORY)
-            .apply()
+        sharedPreferences.edit {
+            remove(TRACK_HISTORY)
+        }
     }
 
     private fun readFromPreferences(): Array<Track> {
@@ -42,9 +43,9 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private fun writeToPreferences() {
         val json = gson.toJson(cachedHistory)
-        sharedPreferences.edit()
-            .putString(TRACK_HISTORY, json)
-            .apply()
+        sharedPreferences.edit {
+            putString(TRACK_HISTORY, json)
+        }
     }
 
     companion object {
