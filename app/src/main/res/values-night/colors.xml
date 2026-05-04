@@ -3,9 +3,11 @@
     <color name="background">#1A1B22</color>
     <color name="search_background">#FFFFFF</color>
     <color name="search_hint">#1A1B22</color>
-    <color name="track_title">#FFFFFF</color>
-    <color name="track_subtitle">#AEAFB4</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#AEAFB4</color>
     <color name="search_msg">#FFFFFF</color>
     <color name="reload_button_text">#1A1B22</color>
     <color name="button_background">#FFFFFF</color>
+    <color name="back_button">#FFFFFF</color>
+    <color name="round_button_background">#535459</color>
 </resources>

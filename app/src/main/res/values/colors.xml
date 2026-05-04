@@ -7,9 +7,11 @@
     <color name="green">#00D6C3</color>
     <color name="search_background">#E6E8EB</color>
     <color name="search_hint">#AEAFB4</color>
-    <color name="track_title">#000000</color>
-    <color name="track_subtitle">#AEAFB4</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#AEAFB4</color>
     <color name="search_msg">#1A1B22</color>
     <color name="reload_button_text">#FFFFFF</color>
     <color name="button_background">#1A1B22</color>
+    <color name="back_button">#1A1B22</color>
+    <color name="round_button_background">#C6C6C8</color>
 </resources>
