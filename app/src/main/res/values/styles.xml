@@ -5,6 +5,7 @@
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:backgroundTint">?attr/colorPrimary</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
+        <item name="navigationIconTint">@color/back_button</item>
     </style>
 
     <style name="ToolbarTitleTextAppearanceStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -44,12 +45,12 @@
     </style>
 
     <style name="TrackTitleStyle" parent="TrackTextStyle">
-        <item name="android:textColor">@color/track_title</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">@dimen/track_title_size</item>
     </style>
 
     <style name="TrackSubtitleStyle" parent="TrackTextStyle">
-        <item name="android:textColor">@color/track_subtitle</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">@dimen/track_subtitle_size</item>
     </style>
 
@@ -68,6 +69,52 @@
         <item name="android:textColor">@color/reload_button_text</item>
         <item name="android:textSize">14sp</item>
         <item name="cornerRadius">54dp</item>
+    </style>
+
+    <style name="PlayerControlButtonStyle">
+        <item name="android:layout_width">51dp</item>
+        <item name="android:layout_height">51dp</item>
+        <item name="android:background">@drawable/round_button</item>
+        <item name="android:tint">@color/white</item>
+    </style>
+
+    <style name="PlayerTextStyle">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="PlayerTrackNameStyle" parent="PlayerTextStyle">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="PlayerArtistNameStyle" parent="PlayerTextStyle">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="PlayerTimerStyle" parent="PlayerTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="PlayerInfoStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <style name="PlayerInfoLabelStyle" parent="PlayerInfoStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="PlayerInfoValueStyle" parent="PlayerInfoStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:gravity">end</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
     </style>
 
 </resources>
