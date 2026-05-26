@@ -1,5 +1,6 @@
 package com.example.playlistmaker.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
@@ -50,11 +51,13 @@ class SearchActivity : AppCompatActivity() {
 
     private val trackAdapter = TrackAdapter(tracks) {
         searchHistory.add(it)
+        showPlayer(it)
     }
 
     private val historyAdapter = TrackAdapter(historyTracks) {
         searchHistory.add(it)
         updateTrackHistory()
+        showPlayer(it)
     }
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
@@ -219,17 +222,25 @@ class SearchActivity : AppCompatActivity() {
 
     private fun updateTrackHistory(): Boolean {
         val history = searchHistory.getHistory()
-        val showHistory = canUpdateTrackHistory() && history.isNotEmpty()
+        val isShowHistory = canUpdateTrackHistory() && history.isNotEmpty()
 
-        if (showHistory) {
+        if (isShowHistory) {
             historyTracks.clear()
             historyTracks.addAll(history)
             historyAdapter.notifyDataSetChanged()
         }
-        return showHistory
+        return isShowHistory
+    }
+
+    private fun showPlayer(track: Track) {
+        val intent = Intent(this, PlayerActivity::class.java).apply {
+            putExtra(EXTRA_TRACK, track)
+        }
+        startActivity(intent)
     }
 
     companion object {
+        const val EXTRA_TRACK = "extra_track"
         private const val SAVED_QUERY = "SAVED_QUERY"
         private const val EMPTY_STRING = ""
         private const val SEARCH_HISTORY = "search_history"
