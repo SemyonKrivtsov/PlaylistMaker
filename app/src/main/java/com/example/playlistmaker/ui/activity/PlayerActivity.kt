@@ -1,6 +1,5 @@
 package com.example.playlistmaker.ui.activity
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -16,6 +15,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.ui.activity.SearchActivity.Companion.EXTRA_TRACK
 import com.example.playlistmaker.utils.TimeFormatter
+import com.example.playlistmaker.utils.getParcelableExtraCompat
 import com.google.android.material.appbar.MaterialToolbar
 
 class PlayerActivity : AppCompatActivity() {
@@ -47,12 +47,7 @@ class PlayerActivity : AppCompatActivity() {
 
         initializeViews()
 
-        val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(EXTRA_TRACK) as? Track
-        }
+        val track = intent.getParcelableExtraCompat<Track>(EXTRA_TRACK)
 
         if (track != null) {
             bindTrack(track)
