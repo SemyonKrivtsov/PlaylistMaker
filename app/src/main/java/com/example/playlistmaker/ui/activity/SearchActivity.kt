@@ -2,11 +2,14 @@ package com.example.playlistmaker.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import androidx.activity.enableEdgeToEdge
@@ -39,25 +42,34 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var errorImageView: ImageView
     private lateinit var errorTextView: TextView
     private lateinit var reloadButton: MaterialButton
+    private lateinit var progressBar: ProgressBar
     private lateinit var tracksApiService: TracksApiService
 
     private var searchValue: String = EMPTY_STRING
     private val tracks: MutableList<Track> = mutableListOf()
     private val historyTracks: MutableList<Track> = mutableListOf()
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchRequest() }
+    private var isClickAllowed = true
+
     private val searchHistory by lazy {
         SearchHistory(getSharedPreferences(SEARCH_HISTORY, MODE_PRIVATE))
     }
 
     private val trackAdapter = TrackAdapter(tracks) {
-        searchHistory.add(it)
-        showPlayer(it)
+        if (clickDebounce()) {
+            searchHistory.add(it)
+            showPlayer(it)
+        }
     }
 
     private val historyAdapter = TrackAdapter(historyTracks) {
-        searchHistory.add(it)
-        updateTrackHistory()
-        showPlayer(it)
+        if (clickDebounce()) {
+            searchHistory.add(it)
+            updateTrackHistory()
+            showPlayer(it)
+        }
     }
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
@@ -82,7 +94,7 @@ class SearchActivity : AppCompatActivity() {
         historyContainer = findViewById<ConstraintLayout>(R.id.history)
         historyRecyclerView = findViewById<RecyclerView>(R.id.historyRecyclerView)
         val clearHistoryButton = findViewById<MaterialButton>(R.id.clearHistory)
-
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
         clearHistoryButton.setOnClickListener {
             searchHistory.clear()
             historyContainer.isVisible = false
@@ -100,6 +112,9 @@ class SearchActivity : AppCompatActivity() {
             clearButton.isVisible = !text.isNullOrEmpty()
             searchValue = text.toString()
             historyContainer.isVisible = updateTrackHistory()
+            if (!text.isNullOrEmpty()) {
+                searchDebounce()
+            }
         }
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -187,11 +202,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchRequest() {
+        hideErrorLayout()
+        progressBar.isVisible = true
         tracksApiService.search(searchValue).enqueue(object : Callback<SearchResponse> {
             override fun onResponse(
                 call: Call<SearchResponse>,
                 response: Response<SearchResponse>
             ) {
+                progressBar.isVisible = false
                 if (response.isSuccessful) {
                     val foundTracks = response.body()?.results.orEmpty()
                     if (foundTracks.isEmpty()) {
@@ -209,6 +227,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                progressBar.isVisible = false
                 showNetworkError()
                 Log.e("NetworkError", "Error (onFailure): ${t.message}")
             }
@@ -239,11 +258,27 @@ class SearchActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     companion object {
         const val EXTRA_TRACK = "extra_track"
         private const val SAVED_QUERY = "SAVED_QUERY"
         private const val EMPTY_STRING = ""
         private const val SEARCH_HISTORY = "search_history"
         private const val ITUNES_BASE_URL = "https://itunes.apple.com"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
