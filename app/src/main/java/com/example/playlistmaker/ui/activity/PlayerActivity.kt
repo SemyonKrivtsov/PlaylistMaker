@@ -1,6 +1,9 @@
 package com.example.playlistmaker.ui.activity
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -32,6 +35,13 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var playbackTime: TextView
 
+    private var mediaPlayer = MediaPlayer()
+    private var playerState = STATE_DEFAULT
+    private var trackUrl: String? = null
+    private val timerRunnable: Runnable = createUpdateTimerTask()
+
+    private var mainThreadHandler: Handler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -41,6 +51,8 @@ class PlayerActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        mainThreadHandler = Handler(Looper.getMainLooper())
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -52,6 +64,23 @@ class PlayerActivity : AppCompatActivity() {
         if (track != null) {
             bindTrack(track)
         }
+
+        playButton.setOnClickListener {
+            playbackControl()
+        }
+
+        preparePlayer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        mainThreadHandler?.removeCallbacks(timerRunnable)
     }
 
     private fun initializeViews() {
@@ -75,6 +104,8 @@ class PlayerActivity : AppCompatActivity() {
         genreValue.text = track.primaryGenreName
         countryValue.text = track.country
 
+        trackUrl = track.previewUrl
+
         if (track.collectionName.isNullOrEmpty()) {
             albumValue.visibility = View.GONE
             albumLabel.visibility = View.GONE
@@ -94,5 +125,66 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(trackImage)
+    }
+
+    private fun preparePlayer() {
+        val url = trackUrl ?: return
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playerState = STATE_PREPARED
+            mainThreadHandler?.removeCallbacks(timerRunnable)
+            playbackTime.setText(R.string.zero_time)
+            playButton.setImageResource(R.drawable.ic_play_100)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playButton.setImageResource(R.drawable.ic_pause_100)
+        playerState = STATE_PLAYING
+
+        mainThreadHandler?.post(timerRunnable)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        mainThreadHandler?.removeCallbacks(timerRunnable)
+        playButton.setImageResource(R.drawable.ic_play_100)
+        playerState = STATE_PAUSED
+    }
+
+    private fun playbackControl() {
+        when (playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun createUpdateTimerTask(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                playbackTime.text =
+                    TimeFormatter.formatMillis(mediaPlayer.currentPosition.toLong())
+                mainThreadHandler?.postDelayed(this, DELAY)
+            }
+        }
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+
+        private const val DELAY = 300L
     }
 }
