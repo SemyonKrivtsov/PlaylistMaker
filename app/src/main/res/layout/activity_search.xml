@@ -45,7 +45,8 @@
             android:paddingStart="12dp"
             android:singleLine="true"
             android:textColor="@color/black"
-            android:textColorHint="@color/search_hint" />
+            android:textColorHint="@color/search_hint"
+            android:theme="@style/SearchEditTextStyle" />
 
         <ImageView
             android:id="@+id/clearIcon"

@@ -10,4 +10,5 @@
     <color name="button_background">#FFFFFF</color>
     <color name="back_button">#FFFFFF</color>
     <color name="round_button_background">#535459</color>
+    <color name="switch_track_on">#9FBBF3</color>
 </resources>

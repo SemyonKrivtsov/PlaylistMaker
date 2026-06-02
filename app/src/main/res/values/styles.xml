@@ -71,6 +71,11 @@
         <item name="cornerRadius">54dp</item>
     </style>
 
+    <style name="SearchEditTextStyle" parent="ThemeOverlay.MaterialComponents">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorControlActivated">@color/blue</item>
+    </style>
+
     <style name="PlayerControlButtonStyle">
         <item name="android:layout_width">51dp</item>
         <item name="android:layout_height">51dp</item>
