@@ -48,7 +48,8 @@
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="3dp"
                 android:checked="true"
-                android:thumbTint="@color/green" />
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
         </FrameLayout>
 
         <FrameLayout

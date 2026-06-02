@@ -1,6 +1,8 @@
 package com.example.playlistmaker.ui.activity
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -12,6 +14,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.media.AudioPlayer
+import com.example.playlistmaker.media.AudioPlayerImpl
+import com.example.playlistmaker.media.PlayerState
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.ui.activity.SearchActivity.Companion.EXTRA_TRACK
 import com.example.playlistmaker.utils.TimeFormatter
@@ -32,6 +37,13 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var playbackTime: TextView
 
+    private val audioPlayer: AudioPlayer = AudioPlayerImpl()
+    private var playerState = PlayerState.DEFAULT
+    private var trackUrl: String? = null
+    private val timerRunnable: Runnable = createUpdateTimerTask()
+
+    private var mainThreadHandler: Handler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -41,6 +53,8 @@ class PlayerActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        mainThreadHandler = Handler(Looper.getMainLooper())
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -52,6 +66,23 @@ class PlayerActivity : AppCompatActivity() {
         if (track != null) {
             bindTrack(track)
         }
+
+        playButton.setOnClickListener {
+            playbackControl()
+        }
+
+        preparePlayer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        audioPlayer.release()
+        mainThreadHandler?.removeCallbacks(timerRunnable)
     }
 
     private fun initializeViews() {
@@ -75,6 +106,8 @@ class PlayerActivity : AppCompatActivity() {
         genreValue.text = track.primaryGenreName
         countryValue.text = track.country
 
+        trackUrl = track.previewUrl
+
         if (track.collectionName.isNullOrEmpty()) {
             albumValue.visibility = View.GONE
             albumLabel.visibility = View.GONE
@@ -94,5 +127,55 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(trackImage)
+    }
+
+    private fun preparePlayer() {
+        val url = trackUrl ?: return
+        audioPlayer.prepare(
+            url = url,
+            onPrepared = { playerState = PlayerState.PREPARED },
+            onCompletion = {
+                playerState = PlayerState.PREPARED
+                mainThreadHandler?.removeCallbacks(timerRunnable)
+                playbackTime.setText(R.string.zero_time)
+                playButton.setImageResource(R.drawable.ic_play_100)
+            }
+        )
+    }
+
+    private fun startPlayer() {
+        audioPlayer.start()
+        playButton.setImageResource(R.drawable.ic_pause_100)
+        playerState = PlayerState.PLAYING
+        mainThreadHandler?.post(timerRunnable)
+    }
+
+    private fun pausePlayer() {
+        audioPlayer.pause()
+        mainThreadHandler?.removeCallbacks(timerRunnable)
+        playButton.setImageResource(R.drawable.ic_play_100)
+        playerState = PlayerState.PAUSED
+    }
+
+    private fun playbackControl() {
+        when (playerState) {
+            PlayerState.PLAYING -> pausePlayer()
+            PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
+            PlayerState.DEFAULT -> Unit
+        }
+    }
+
+    private fun createUpdateTimerTask(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                playbackTime.text =
+                    TimeFormatter.formatMillis(audioPlayer.getCurrentPosition().toLong())
+                mainThreadHandler?.postDelayed(this, DELAY)
+            }
+        }
+    }
+
+    companion object {
+        private const val DELAY = 300L
     }
 }
