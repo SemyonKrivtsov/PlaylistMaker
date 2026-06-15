@@ -1,20 +1,25 @@
 package com.example.playlistmaker.ui.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.App
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.SettingsInteractor
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+
+    private val settingsInteractor: SettingsInteractor by lazy { Creator.provideSettingsInteractor() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
         val supportButton = findViewById<ImageButton>(R.id.supportButton)
         supportButton.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SENDTO)
-            supportIntent.setData(Uri.parse("mailto:"))
+            supportIntent.setData("mailto:".toUri())
             val email = getString(R.string.email)
             val message = getString(R.string.text_message)
             val subject = getString(R.string.subject)
@@ -59,7 +64,7 @@ class SettingsActivity : AppCompatActivity() {
         val offerButton = findViewById<ImageButton>(R.id.offerButton)
         offerButton.setOnClickListener {
             val offerUri = getString(R.string.practicum_offer_url)
-            val offerIntent = Intent(Intent.ACTION_VIEW, Uri.parse(offerUri))
+            val offerIntent = Intent(Intent.ACTION_VIEW, offerUri.toUri())
 
             if (offerIntent.resolveActivity(packageManager) != null) {
                 startActivity(offerIntent)
@@ -71,7 +76,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         val app = applicationContext as App
-        themeSwitcher.isChecked = app.darkTheme
+        themeSwitcher.isChecked = settingsInteractor.isDarkThemeEnabled()
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             app.switchTheme(checked)
         }
