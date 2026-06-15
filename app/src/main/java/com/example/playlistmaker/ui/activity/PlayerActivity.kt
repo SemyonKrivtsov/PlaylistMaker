@@ -15,7 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.api.PlayerInteractor
+import com.example.playlistmaker.domain.api.PlayerRepository
 import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.activity.SearchActivity.Companion.EXTRA_TRACK
@@ -37,7 +37,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var playbackTime: TextView
 
-    private val playerInteractor: PlayerInteractor = Creator.providePlayerInteractor()
+    private val player: PlayerRepository = Creator.providePlayerRepository()
     private var playerState = PlayerState.DEFAULT
     private var trackUrl: String? = null
     private val timerRunnable: Runnable = createUpdateTimerTask()
@@ -81,7 +81,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        playerInteractor.release()
+        player.release()
         mainThreadHandler?.removeCallbacks(timerRunnable)
     }
 
@@ -131,7 +131,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun preparePlayer() {
         val url = trackUrl ?: return
-        playerInteractor.prepare(
+        player.prepare(
             url = url,
             onPrepared = { playerState = PlayerState.PREPARED },
             onCompletion = {
@@ -144,14 +144,14 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun startPlayer() {
-        playerInteractor.start()
+        player.start()
         playButton.setImageResource(R.drawable.ic_pause_100)
         playerState = PlayerState.PLAYING
         mainThreadHandler?.post(timerRunnable)
     }
 
     private fun pausePlayer() {
-        playerInteractor.pause()
+        player.pause()
         mainThreadHandler?.removeCallbacks(timerRunnable)
         playButton.setImageResource(R.drawable.ic_play_100)
         playerState = PlayerState.PAUSED
@@ -169,7 +169,7 @@ class PlayerActivity : AppCompatActivity() {
         return object : Runnable {
             override fun run() {
                 playbackTime.text =
-                    TimeFormatter.formatMillis(playerInteractor.getCurrentPosition().toLong())
+                    TimeFormatter.formatMillis(player.getCurrentPosition().toLong())
                 mainThreadHandler?.postDelayed(this, DELAY)
             }
         }
