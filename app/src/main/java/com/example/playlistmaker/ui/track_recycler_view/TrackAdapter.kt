@@ -3,7 +3,7 @@ package com.example.playlistmaker.ui.track_recycler_view
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.R
 
 class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (Track) -> Unit

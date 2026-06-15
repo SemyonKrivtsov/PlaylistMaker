@@ -5,19 +5,17 @@ import androidx.appcompat.app.AppCompatDelegate
 
 class App : Application() {
 
-    var darkTheme = false
-    private val sharedPreferences by lazy { getSharedPreferences(SETTINGS, MODE_PRIVATE) }
+    private val settingsInteractor by lazy { Creator.provideSettingsInteractor() }
 
     override fun onCreate() {
         super.onCreate()
-        darkTheme = sharedPreferences.getBoolean(DARK_THEME, false)
-        applyTheme(darkTheme)
+        Creator.initApplication(this)
+        applyTheme(settingsInteractor.isDarkThemeEnabled())
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
+        settingsInteractor.setDarkThemeEnabled(darkThemeEnabled)
         applyTheme(darkThemeEnabled)
-        saveTheme(darkThemeEnabled)
     }
 
     private fun applyTheme(darkThemeEnabled: Boolean) {
@@ -28,16 +26,5 @@ class App : Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-    }
-
-    private fun saveTheme(darkThemeEnabled: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(DARK_THEME, darkThemeEnabled)
-            .apply()
-    }
-
-    companion object {
-        private const val SETTINGS = "settings"
-        private const val DARK_THEME = "dark_theme"
     }
 }

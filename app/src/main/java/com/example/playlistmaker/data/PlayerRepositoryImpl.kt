@@ -1,16 +1,17 @@
-package com.example.playlistmaker.media
+package com.example.playlistmaker.data
 
 import android.media.MediaPlayer
+import com.example.playlistmaker.domain.api.PlayerRepository
 
-class AudioPlayerImpl : AudioPlayer {
+class PlayerRepositoryImpl : PlayerRepository {
 
     private val mediaPlayer = MediaPlayer()
 
     override fun prepare(url: String, onPrepared: () -> Unit, onCompletion: () -> Unit) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener { onPrepared() }
         mediaPlayer.setOnCompletionListener { onCompletion() }
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.prepareAsync()
     }
 
     override fun start() = mediaPlayer.start()
