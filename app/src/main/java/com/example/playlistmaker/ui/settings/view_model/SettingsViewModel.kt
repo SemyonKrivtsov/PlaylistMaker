@@ -25,9 +25,9 @@ class SettingsViewModel(
 
     fun shareApp() = sharingInteractor.shareApp()
 
-    fun openTerms() = sharingInteractor.openTerms()
+    fun openTerms(errorMessage: String) = sharingInteractor.openTerms(errorMessage)
 
-    fun openSupport() = sharingInteractor.openSupport()
+    fun openSupport(errorMessage: String) = sharingInteractor.openSupport(errorMessage)
 
     private fun applyTheme(darkThemeEnabled: Boolean) {
         AppCompatDelegate.setDefaultNightMode(

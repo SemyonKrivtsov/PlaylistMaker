@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.ui.settings.view_model.SettingsViewModel
@@ -36,11 +37,11 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.supportButton.setOnClickListener {
-            viewModel.openSupport()
+            viewModel.openSupport(getString(R.string.error_msg_no_email_client))
         }
 
         binding.offerButton.setOnClickListener {
-            viewModel.openTerms()
+            viewModel.openTerms(getString(R.string.error_msg_no_browsers))
         }
 
         binding.themeSwitcher.setOnCheckedChangeListener { _, checked ->
