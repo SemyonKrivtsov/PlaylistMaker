@@ -5,27 +5,23 @@ import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.ui.player.PlayerActivity
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
-import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
 
-    private val viewModel: SearchViewModel by viewModels {
-        Creator.provideSearchViewModelFactory()
-    }
+    private val viewModel by viewModel<SearchViewModel>()
 
     private val tracks: MutableList<Track> = mutableListOf()
     private val historyTracks: MutableList<Track> = mutableListOf()
@@ -157,7 +153,7 @@ class SearchActivity : AppCompatActivity() {
         if (viewModel.clickDebounce()) {
             viewModel.addTrackToHistory(track)
             val intent = Intent(this, PlayerActivity::class.java).apply {
-                putExtra(PlayerActivity.EXTRA_TRACK, Gson().toJson(track))
+                putExtra(PlayerActivity.EXTRA_TRACK, track)
             }
             startActivity(intent)
         }
