@@ -2,25 +2,22 @@ package com.example.playlistmaker.ui.player.view_model
 
 import android.media.MediaPlayer
 import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.utils.TimeFormatter
 
-class PlayerViewModel(private val url: String) : ViewModel() {
+class PlayerViewModel(
+    private val url: String,
+    private val mediaPlayer: MediaPlayer,
+    private val handler: Handler
+) : ViewModel() {
 
     private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
     fun observePlayerState(): LiveData<Int> = playerStateLiveData
 
     private val progressTimeLiveData = MutableLiveData(DEFAULT_PROGRESS)
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-
-    private val mediaPlayer = MediaPlayer()
-    private val handler = Handler(Looper.getMainLooper())
 
     private val timerRunnable = Runnable {
         if (playerStateLiveData.value == STATE_PLAYING) {
@@ -98,11 +95,5 @@ class PlayerViewModel(private val url: String) : ViewModel() {
 
         private const val DEFAULT_PROGRESS = "00:00"
         private const val TIMER_DELAY = 200L
-
-        fun getFactory(trackUrl: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(trackUrl)
-            }
-        }
     }
 }

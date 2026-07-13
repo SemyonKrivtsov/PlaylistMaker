@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -14,12 +14,19 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.example.playlistmaker.utils.TimeFormatter
-import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+
+    private val track: Track? by lazy {
+        IntentCompat.getParcelableExtra(intent, EXTRA_TRACK, Track::class.java)
+    }
+    private val viewModel by viewModel<PlayerViewModel> {
+        parametersOf(track?.previewUrl.orEmpty())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +41,7 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        val track = intent.getStringExtra(EXTRA_TRACK)?.let {
-            Gson().fromJson(it, Track::class.java)
-        }
         track?.let { bindTrack(it) }
-
-        val url = track?.previewUrl.orEmpty()
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(url))
-            .get(PlayerViewModel::class.java)
 
         viewModel.observePlayerState().observe(this) { state ->
             binding.playButton.isEnabled = state != PlayerViewModel.STATE_DEFAULT
