@@ -49,7 +49,6 @@ class PlayerViewModel(
     private fun preparePlayer() {
         if (url.isBlank()) return
         mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             playerStateLiveData.postValue(PlayerState.Prepared)
         }
@@ -57,6 +56,7 @@ class PlayerViewModel(
             playerStateLiveData.postValue(PlayerState.Prepared)
             pauseTimer()
         }
+        mediaPlayer.prepareAsync()
     }
 
     private fun startPlayer() {
