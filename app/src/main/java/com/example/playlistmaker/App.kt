@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.di.dataModule
 import com.example.playlistmaker.di.interactorModule
 import com.example.playlistmaker.di.repositoryModule
@@ -21,17 +20,6 @@ class App : Application() {
             modules(dataModule, repositoryModule, interactorModule, viewModelModule)
         }
 
-        val themeSettings = getKoin().get<SettingsInteractor>().getThemeSettings()
-        applyTheme(themeSettings.isDarkThemeEnabled)
-    }
-
-    private fun applyTheme(darkThemeEnabled: Boolean) {
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
+        getKoin().get<SettingsInteractor>().applyCurrentTheme()
     }
 }

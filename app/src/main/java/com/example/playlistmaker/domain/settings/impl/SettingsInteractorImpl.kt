@@ -12,4 +12,8 @@ class SettingsInteractorImpl(
 
     override fun updateThemeSetting(settings: ThemeSettings) =
         repository.updateThemeSetting(settings)
+
+    override fun applyCurrentTheme() {
+        repository.applyCurrentTheme()
+    }
 }
