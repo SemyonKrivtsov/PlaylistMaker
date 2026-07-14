@@ -44,18 +44,7 @@ class PlayerActivity : AppCompatActivity() {
         track?.let { bindTrack(it) }
 
         viewModel.observePlayerState().observe(this) { state ->
-            binding.playButton.isEnabled = state != PlayerViewModel.STATE_DEFAULT
-            binding.playButton.setImageResource(
-                if (state == PlayerViewModel.STATE_PLAYING) {
-                    R.drawable.ic_pause_100
-                } else {
-                    R.drawable.ic_play_100
-                }
-            )
-        }
-
-        viewModel.observeProgressTime().observe(this) {
-            binding.playbackTime.text = it
+            render(state)
         }
 
         binding.playButton.setOnClickListener {
@@ -94,6 +83,19 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(binding.trackImage)
+    }
+
+    private fun render(state: PlayerState) {
+        binding.playbackTime.text = state.progress
+
+        binding.playButton.setImageResource(
+            if (state is PlayerState.Playing) {
+                R.drawable.ic_pause_100
+            } else {
+                R.drawable.ic_play_100
+            }
+        )
+        binding.playButton.isEnabled = state !is PlayerState.Default
     }
 
     companion object {
