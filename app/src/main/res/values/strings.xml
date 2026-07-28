@@ -14,7 +14,7 @@
     <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/</string>
     <string name="error_msg_no_email_client">Почтовый клиент не найден</string>
     <string name="error_msg_no_browsers">Браузер не найден</string>
-    <string name="notFoundTracksMsg">Ничего не нашлось</string>
+    <string name="not_found_tracks_msg">Ничего не нашлось</string>
     <string name="network_failed_msg">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="refresh">Обновить</string>
     <string name="you_search">Вы искали</string>
@@ -25,4 +25,9 @@
     <string name="genre_label">Жанр</string>
     <string name="country_label">Страна</string>
     <string name="zero_time">0:00</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="favourite_tracks">Избранные треки</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="empty_favourites_msg">Ваша медиатека пуста</string>
+    <string name="empty_playlists_msg">Вы не создали\nни одного плейлиста</string>
 </resources>

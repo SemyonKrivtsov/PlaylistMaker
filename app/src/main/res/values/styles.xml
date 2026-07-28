@@ -54,14 +54,14 @@
         <item name="android:textSize">@dimen/track_subtitle_size</item>
     </style>
 
-    <style name="SearchMessage">
+    <style name="MessageStyle">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/search_msg</item>
         <item name="android:textSize">19sp</item>
     </style>
 
-    <style name="SearchButton">
+    <style name="PrimaryButtonStyle">
         <item name="android:backgroundTint">@color/button_background</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:maxLines">1</item>
@@ -122,4 +122,21 @@
         <item name="android:singleLine">true</item>
     </style>
 
+
+    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="tabIndicatorColor">@color/back_button</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabTextColor">@color/back_button</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabTextAppearance">@style/TabTextAppearanceStyle</item>
+    </style>
+
+    <style name="TabTextAppearanceStyle" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>

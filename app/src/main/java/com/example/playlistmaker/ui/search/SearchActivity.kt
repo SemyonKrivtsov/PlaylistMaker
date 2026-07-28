@@ -131,7 +131,7 @@ class SearchActivity : AppCompatActivity() {
     private fun showNotFoundError() {
         hideAll()
         binding.errorImage.setImageResource(R.drawable.ic_not_found_120)
-        binding.errorMessage.setText(R.string.notFoundTracksMsg)
+        binding.errorMessage.setText(R.string.not_found_tracks_msg)
         binding.errorImage.isVisible = true
         binding.errorMessage.isVisible = true
     }
