@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -14,12 +14,19 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.example.playlistmaker.utils.TimeFormatter
-import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+
+    private val track: Track? by lazy {
+        IntentCompat.getParcelableExtra(intent, EXTRA_TRACK, Track::class.java)
+    }
+    private val viewModel by viewModel<PlayerViewModel> {
+        parametersOf(track?.previewUrl.orEmpty())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,28 +41,10 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        val track = intent.getStringExtra(EXTRA_TRACK)?.let {
-            Gson().fromJson(it, Track::class.java)
-        }
         track?.let { bindTrack(it) }
 
-        val url = track?.previewUrl.orEmpty()
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(url))
-            .get(PlayerViewModel::class.java)
-
         viewModel.observePlayerState().observe(this) { state ->
-            binding.playButton.isEnabled = state != PlayerViewModel.STATE_DEFAULT
-            binding.playButton.setImageResource(
-                if (state == PlayerViewModel.STATE_PLAYING) {
-                    R.drawable.ic_pause_100
-                } else {
-                    R.drawable.ic_play_100
-                }
-            )
-        }
-
-        viewModel.observeProgressTime().observe(this) {
-            binding.playbackTime.text = it
+            render(state)
         }
 
         binding.playButton.setOnClickListener {
@@ -94,6 +83,19 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(binding.trackImage)
+    }
+
+    private fun render(state: PlayerState) {
+        binding.playbackTime.text = state.progress
+
+        binding.playButton.setImageResource(
+            if (state is PlayerState.Playing) {
+                R.drawable.ic_pause_100
+            } else {
+                R.drawable.ic_play_100
+            }
+        )
+        binding.playButton.isEnabled = state !is PlayerState.Default
     }
 
     companion object {
