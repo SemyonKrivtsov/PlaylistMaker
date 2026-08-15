@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#1A1B22</color>
     <color name="search_background">#FFFFFF</color>
     <color name="search_hint">#1A1B22</color>
     <color name="text_primary">#FFFFFF</color>
@@ -11,4 +10,5 @@
     <color name="back_button">#FFFFFF</color>
     <color name="round_button_background">#535459</color>
     <color name="switch_track_on">#9FBBF3</color>
+    <color name="bottom_nav_unselected">#FFFFFF</color>
 </resources>
