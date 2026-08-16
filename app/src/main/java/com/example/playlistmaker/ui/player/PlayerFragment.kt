@@ -62,6 +62,11 @@ class PlayerFragment : Fragment() {
         viewModel.onPause()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun bindTrack(track: Track) {
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName

@@ -92,6 +92,13 @@ class SearchFragment : Fragment() {
         viewModel.observeState().observe(viewLifecycleOwner) { render(it) }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerView.adapter = null
+        binding.historyRecyclerView.adapter = null
+        _binding = null
+    }
+
     private fun render(state: SearchState) {
         when (state) {
             is SearchState.Loading -> showLoading()
