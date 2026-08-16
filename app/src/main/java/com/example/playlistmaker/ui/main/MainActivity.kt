@@ -1,15 +1,15 @@
 package com.example.playlistmaker.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
-import com.example.playlistmaker.ui.library.LibraryActivity
-import com.example.playlistmaker.ui.search.SearchActivity
-import com.example.playlistmaker.ui.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,14 +26,16 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding.buttonSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
-        }
-        binding.buttonLibrary.setOnClickListener {
-            startActivity(Intent(this, LibraryActivity::class.java))
-        }
-        binding.buttonSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        binding.bottomNavigation.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val isBottomNavVisible = destination.id != R.id.playerFragment
+            binding.bottomNavigation.isVisible = isBottomNavVisible
+            binding.bottomNavigationLine.isVisible = isBottomNavVisible
         }
     }
 }
