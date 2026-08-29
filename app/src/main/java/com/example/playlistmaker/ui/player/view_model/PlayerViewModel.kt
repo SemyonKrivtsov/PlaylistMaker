@@ -1,36 +1,28 @@
 package com.example.playlistmaker.ui.player.view_model
 
 import android.media.MediaPlayer
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.ui.player.PlayerState
 import com.example.playlistmaker.utils.TimeFormatter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val url: String,
-    private val mediaPlayer: MediaPlayer,
-    private val handler: Handler
+    private val mediaPlayer: MediaPlayer
 ) : ViewModel() {
     private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default)
-    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
-
-    private val timerRunnable = Runnable {
-        if (playerStateLiveData.value is PlayerState.Playing) {
-            startTimerUpdate()
-        }
-    }
+    private var timerJob: Job? = null
 
     init {
         preparePlayer()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        mediaPlayer.release()
-        pauseTimer()
-    }
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
@@ -46,6 +38,11 @@ class PlayerViewModel(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        mediaPlayer.release()
+    }
+
     private fun preparePlayer() {
         if (url.isBlank()) return
         mediaPlayer.setDataSource(url)
@@ -53,8 +50,8 @@ class PlayerViewModel(
             playerStateLiveData.postValue(PlayerState.Prepared)
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.postValue(PlayerState.Prepared)
             pauseTimer()
+            playerStateLiveData.postValue(PlayerState.Prepared)
         }
         mediaPlayer.prepareAsync()
     }
@@ -71,15 +68,20 @@ class PlayerViewModel(
     }
 
     private fun startTimerUpdate() {
-        playerStateLiveData.postValue(PlayerState.Playing(TimeFormatter.formatMillis(mediaPlayer.currentPosition.toLong())))
-        handler.postDelayed(timerRunnable, TIMER_DELAY)
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                playerStateLiveData.value =
+                    PlayerState.Playing(TimeFormatter.formatMillis(mediaPlayer.currentPosition.toLong()))
+                delay(TIMER_DELAY)
+            }
+        }
     }
 
     private fun pauseTimer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
     }
 
     companion object {
-        private const val TIMER_DELAY = 200L
+        private const val TIMER_DELAY = 300L
     }
 }
