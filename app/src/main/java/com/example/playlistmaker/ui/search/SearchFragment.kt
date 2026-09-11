@@ -56,7 +56,8 @@ class SearchFragment : Fragment() {
 
         binding.clearIcon.setOnClickListener {
             binding.inputEditText.setText("")
-            val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.clearIcon.windowToken, 0)
         }
 

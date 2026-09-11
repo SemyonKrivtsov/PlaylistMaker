@@ -1,9 +1,11 @@
 package com.example.playlistmaker.ui.player
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -26,7 +28,7 @@ class PlayerFragment : Fragment() {
         BundleCompat.getParcelable(requireArguments(), ARG_TRACK, Track::class.java)!!
     }
     private val viewModel by viewModel<PlayerViewModel> {
-        parametersOf(track.previewUrl.orEmpty())
+        parametersOf(track)
     }
 
     override fun onCreateView(
@@ -54,6 +56,14 @@ class PlayerFragment : Fragment() {
 
         binding.playButton.setOnClickListener {
             viewModel.onPlayButtonClicked()
+        }
+
+        binding.likeButton.setOnClickListener {
+            viewModel.onFavouriteClicked()
+        }
+
+        viewModel.observeFavourite().observe(viewLifecycleOwner) { isFavourite ->
+            renderFavourite(isFavourite)
         }
     }
 
@@ -106,6 +116,18 @@ class PlayerFragment : Fragment() {
             }
         )
         binding.playButton.isEnabled = state !is PlayerState.Default
+    }
+
+    private fun renderFavourite(isFavourite: Boolean) {
+        binding.likeButton.setImageResource(
+            if (isFavourite) R.drawable.ic_like_filled_25 else R.drawable.ic_like_25
+        )
+        binding.likeButton.imageTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                requireContext(),
+                if (isFavourite) R.color.like_active else R.color.white
+            )
+        )
     }
 
     companion object {
