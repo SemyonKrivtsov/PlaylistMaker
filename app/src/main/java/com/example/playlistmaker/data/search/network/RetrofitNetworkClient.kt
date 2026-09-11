@@ -3,8 +3,7 @@ package com.example.playlistmaker.data.search.network
 import com.example.playlistmaker.data.search.NetworkClient
 import com.example.playlistmaker.data.search.dto.Response
 import com.example.playlistmaker.data.search.dto.TracksSearchRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
 
 class RetrofitNetworkClient(private val iTunesService: ITunesApiService) : NetworkClient {
 
@@ -13,14 +12,14 @@ class RetrofitNetworkClient(private val iTunesService: ITunesApiService) : Netwo
             resultCode = 400
         }
 
-        return withContext(Dispatchers.IO) {
-            try {
-                iTunesService.search(dto.expression).apply {
-                    resultCode = 200
-                }
-            } catch (e: Throwable) {
-                Response().apply { resultCode = -1 }
+        return try {
+            iTunesService.search(dto.expression).apply {
+                resultCode = 200
             }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Response().apply { resultCode = -1 }
         }
     }
 }

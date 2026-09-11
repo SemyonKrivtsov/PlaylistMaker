@@ -68,6 +68,7 @@ class PlayerViewModel(
     }
 
     private fun startTimerUpdate() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                 playerStateLiveData.value =
