@@ -1,10 +1,11 @@
-package com.example.playlistmaker.domain.search.model
+package com.example.playlistmaker.data.db.entity
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Parcelize
-data class Track(
+@Entity(tableName = "track_table")
+data class TrackEntity(
+    @PrimaryKey
     val trackId: Long,
     val trackName: String,
     val artistName: String,
@@ -15,7 +16,5 @@ data class Track(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String?,
-    val isFavourite: Boolean = false
-) : Parcelable {
-    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
-}
+    val addedAt: Long
+)

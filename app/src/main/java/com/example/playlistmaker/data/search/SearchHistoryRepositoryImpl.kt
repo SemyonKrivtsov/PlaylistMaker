@@ -1,11 +1,13 @@
 package com.example.playlistmaker.data.search
 
 import com.example.playlistmaker.data.StorageClient
+import com.example.playlistmaker.data.db.dao.TrackDao
 import com.example.playlistmaker.domain.search.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.model.Track
 
 class SearchHistoryRepositoryImpl(
-    private val storage: StorageClient<ArrayList<Track>>
+    private val storage: StorageClient<ArrayList<Track>>,
+    private val trackDao: TrackDao
 ) : SearchHistoryRepository {
 
     override fun add(track: Track) {
@@ -18,7 +20,11 @@ class SearchHistoryRepositoryImpl(
         storage.storeData(history)
     }
 
-    override fun getHistory(): List<Track> = storage.getData() ?: emptyList()
+    override suspend fun getHistory(): List<Track> {
+        val history = storage.getData() ?: return emptyList()
+        val favouriteIds = trackDao.getFavouriteTrackIds().toSet()
+        return history.map { it.copy(isFavourite = favouriteIds.contains(it.trackId)) }
+    }
 
     override fun clear() {
         storage.storeData(arrayListOf())

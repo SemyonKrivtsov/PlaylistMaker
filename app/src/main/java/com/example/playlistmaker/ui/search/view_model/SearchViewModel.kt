@@ -19,6 +19,7 @@ class SearchViewModel(
 
     private val stateLiveData = MutableLiveData<SearchState>(SearchState.Empty)
     private var searchJob: Job? = null
+    private var historyJob: Job? = null
     private var isClickAllowed = true
 
     fun observeState(): LiveData<SearchState> = stateLiveData
@@ -38,15 +39,19 @@ class SearchViewModel(
 
     fun showHistory() {
         searchJob?.cancel()
-        val history = searchHistoryInteractor.getHistory()
-        if (history.isNotEmpty()) {
-            stateLiveData.value = SearchState.History(history)
-        } else {
-            stateLiveData.value = SearchState.Empty
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
+            val history = searchHistoryInteractor.getHistory()
+            stateLiveData.value = if (history.isNotEmpty()) {
+                SearchState.History(history)
+            } else {
+                SearchState.Empty
+            }
         }
     }
 
     fun clearHistory() {
+        historyJob?.cancel()
         searchHistoryInteractor.clear()
         stateLiveData.value = SearchState.Empty
     }
