@@ -3,20 +3,23 @@ package com.example.playlistmaker.data.search.network
 import com.example.playlistmaker.data.search.NetworkClient
 import com.example.playlistmaker.data.search.dto.Response
 import com.example.playlistmaker.data.search.dto.TracksSearchRequest
+import kotlinx.coroutines.CancellationException
 
 class RetrofitNetworkClient(private val iTunesService: ITunesApiService) : NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
-        return if (dto is TracksSearchRequest) {
-            try {
-                val resp = iTunesService.search(dto.expression).execute()
-                val body = resp.body() ?: Response()
-                body.apply { resultCode = resp.code() }
-            } catch (e: Throwable) {
-                Response().apply { resultCode = -1 }
+    override suspend fun doRequest(dto: Any): Response {
+        if (dto !is TracksSearchRequest) return Response().apply {
+            resultCode = 400
+        }
+
+        return try {
+            iTunesService.search(dto.expression).apply {
+                resultCode = 200
             }
-        } else {
-            Response().apply { resultCode = 400 }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Response().apply { resultCode = -1 }
         }
     }
 }
