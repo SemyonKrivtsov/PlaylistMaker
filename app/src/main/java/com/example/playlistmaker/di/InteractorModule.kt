@@ -1,6 +1,8 @@
 package com.example.playlistmaker.di
 
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.library.FavouriteTracksInteractor
+import com.example.playlistmaker.domain.library.impl.FavouriteTracksInteractorImpl
 import com.example.playlistmaker.domain.search.SearchHistoryInteractor
 import com.example.playlistmaker.domain.search.TracksInteractor
 import com.example.playlistmaker.domain.search.impl.SearchHistoryInteractorImpl
@@ -13,10 +15,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val interactorModule = module {
-    single<TracksInteractor> { TracksInteractorImpl(get()) }
-    single<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
-    single<SettingsInteractor> { SettingsInteractorImpl(get()) }
-    single<SharingInteractor> {
+    factory<TracksInteractor> { TracksInteractorImpl(get()) }
+    factory<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
+    factory<SettingsInteractor> { SettingsInteractorImpl(get()) }
+    factory<SharingInteractor> {
         SharingInteractorImpl(
             get(),
             androidContext().getString(R.string.course_url),
@@ -24,4 +26,5 @@ val interactorModule = module {
             get()
         )
     }
+    factory<FavouriteTracksInteractor> { FavouriteTracksInteractorImpl(get()) }
 }

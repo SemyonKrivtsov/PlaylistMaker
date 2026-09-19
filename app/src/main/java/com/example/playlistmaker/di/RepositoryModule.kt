@@ -1,10 +1,12 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import com.example.playlistmaker.data.library.FavouriteTracksRepositoryImpl
 import com.example.playlistmaker.data.search.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.search.TracksRepositoryImpl
 import com.example.playlistmaker.data.settings.SettingsRepositoryImpl
 import com.example.playlistmaker.data.sharing.ExternalNavigatorImpl
+import com.example.playlistmaker.domain.library.FavouriteTracksRepository
 import com.example.playlistmaker.domain.search.SearchHistoryRepository
 import com.example.playlistmaker.domain.search.TracksRepository
 import com.example.playlistmaker.domain.settings.SettingsRepository
@@ -14,15 +16,16 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<TracksRepository> { TracksRepositoryImpl(get()) }
+    factory<TracksRepository> { TracksRepositoryImpl(get()) }
 
-    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
+    factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
 
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         val sharedPreferences =
             androidContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
         SettingsRepositoryImpl(sharedPreferences)
     }
 
     single<ExternalNavigator> { ExternalNavigatorImpl(get()) }
+    factory<FavouriteTracksRepository> { FavouriteTracksRepositoryImpl(get(), get()) }
 }

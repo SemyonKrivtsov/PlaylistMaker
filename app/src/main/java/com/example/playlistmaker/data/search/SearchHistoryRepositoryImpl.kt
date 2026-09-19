@@ -18,7 +18,7 @@ class SearchHistoryRepositoryImpl(
         storage.storeData(history)
     }
 
-    override fun getHistory(): List<Track> = storage.getData() ?: emptyList()
+    override suspend fun getHistory(): List<Track> = storage.getData() ?: emptyList()
 
     override fun clear() {
         storage.storeData(arrayListOf())

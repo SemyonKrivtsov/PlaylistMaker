@@ -2,8 +2,11 @@ package com.example.playlistmaker.di
 
 import android.content.Context
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.StorageClient
+import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.db.converters.TrackDBConvertor
 import com.example.playlistmaker.data.search.NetworkClient
 import com.example.playlistmaker.data.search.network.ITunesApiService
 import com.example.playlistmaker.data.search.network.RetrofitNetworkClient
@@ -54,4 +57,16 @@ val dataModule = module {
             message = androidContext().getString(R.string.text_message),
         )
     }
+
+    single {
+        Room.databaseBuilder(
+            androidContext(), AppDatabase::class.java,
+            "playlistmaker.db"
+        )
+            .build()
+    }
+
+    single { get<AppDatabase>().trackDao() }
+
+    factory { TrackDBConvertor() }
 }
