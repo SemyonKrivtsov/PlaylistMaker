@@ -19,19 +19,21 @@ class PlayerViewModel(
     private val favouriteTracksInteractor: FavouriteTracksInteractor
 ) : ViewModel() {
     private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default)
-    private val favouriteLiveData = MutableLiveData(track.isFavourite)
+    private val favouriteLiveData = MutableLiveData(false)
     private var timerJob: Job? = null
     private var favouriteJob: Job? = null
-
-    init {
-        preparePlayer()
-        favouriteJob = viewModelScope.launch {
-            favouriteLiveData.value = favouriteTracksInteractor.isFavourite(track.trackId)
-        }
-    }
+    private var isPrepared = false
 
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
     fun observeFavourite(): LiveData<Boolean> = favouriteLiveData
+
+    fun onViewCreated() {
+        if (!isPrepared) {
+            isPrepared = true
+            preparePlayer()
+        }
+        checkFavourite()
+    }
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
@@ -51,6 +53,13 @@ class PlayerViewModel(
             } else {
                 favouriteTracksInteractor.addToFavourites(track)
             }
+        }
+    }
+
+    private fun checkFavourite() {
+        favouriteJob?.cancel()
+        favouriteJob = viewModelScope.launch {
+            favouriteLiveData.value = favouriteTracksInteractor.isFavourite(track.trackId)
         }
     }
 

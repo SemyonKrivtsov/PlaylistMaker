@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.library.FavouriteTracksInteractor
 import com.example.playlistmaker.ui.library.FavouriteTracksState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -14,13 +15,15 @@ class FavouriteTracksViewModel(
 ) : ViewModel() {
 
     private var isClickAllowed = true
+    private var favouritesJob: Job? = null
     private val stateLiveData =
         MutableLiveData<FavouriteTracksState>()
 
     fun observeState(): LiveData<FavouriteTracksState> = stateLiveData
 
-    init {
-        viewModelScope.launch {
+    fun loadFavouriteTracks() {
+        if (favouritesJob != null) return
+        favouritesJob = viewModelScope.launch {
             favouriteTracksInteractor.getFavouriteTracks().collect { tracks ->
                 stateLiveData.value = if (tracks.isEmpty()) {
                     FavouriteTracksState.Empty

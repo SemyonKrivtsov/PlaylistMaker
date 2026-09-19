@@ -69,6 +69,7 @@ class FavouriteTracksFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.adapter = trackAdapter
         viewModel.observeState().observe(viewLifecycleOwner) { render(it) }
+        viewModel.loadFavouriteTracks()
     }
 
     companion object {

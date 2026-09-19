@@ -65,6 +65,8 @@ class PlayerFragment : Fragment() {
         viewModel.observeFavourite().observe(viewLifecycleOwner) { isFavourite ->
             renderFavourite(isFavourite)
         }
+
+        viewModel.onViewCreated()
     }
 
     override fun onPause() {

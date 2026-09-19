@@ -15,10 +15,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val interactorModule = module {
-    single<TracksInteractor> { TracksInteractorImpl(get()) }
-    single<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
-    single<SettingsInteractor> { SettingsInteractorImpl(get()) }
-    single<SharingInteractor> {
+    factory<TracksInteractor> { TracksInteractorImpl(get()) }
+    factory<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
+    factory<SettingsInteractor> { SettingsInteractorImpl(get()) }
+    factory<SharingInteractor> {
         SharingInteractorImpl(
             get(),
             androidContext().getString(R.string.course_url),
@@ -26,5 +26,5 @@ val interactorModule = module {
             get()
         )
     }
-    single<FavouriteTracksInteractor> { FavouriteTracksInteractorImpl(get()) }
+    factory<FavouriteTracksInteractor> { FavouriteTracksInteractorImpl(get()) }
 }

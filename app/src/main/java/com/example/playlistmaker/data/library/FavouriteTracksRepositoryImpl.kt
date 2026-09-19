@@ -5,6 +5,7 @@ import com.example.playlistmaker.data.db.dao.TrackDao
 import com.example.playlistmaker.domain.library.FavouriteTracksRepository
 import com.example.playlistmaker.domain.search.model.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class FavouriteTracksRepositoryImpl(
@@ -22,7 +23,9 @@ class FavouriteTracksRepositoryImpl(
     }
 
     override fun getFavouriteTracks(): Flow<List<Track>> =
-        trackDao.getFavouriteTracks().map { entities -> entities.map { trackDBConvertor.map(it) } }
+        trackDao.getFavouriteTracks()
+            .distinctUntilChanged()
+            .map { entities -> entities.map { trackDBConvertor.map(it) } }
 
     override suspend fun isFavourite(trackId: Long): Boolean = trackDao.isFavourite(trackId)
 }

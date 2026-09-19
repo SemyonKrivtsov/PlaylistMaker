@@ -31,8 +31,7 @@ class TrackDBConvertor {
             releaseDate = track.releaseDate,
             primaryGenreName = track.primaryGenreName,
             country = track.country,
-            previewUrl = track.previewUrl,
-            isFavourite = true
+            previewUrl = track.previewUrl
         )
     }
 }

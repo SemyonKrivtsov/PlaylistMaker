@@ -16,16 +16,16 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<TracksRepository> { TracksRepositoryImpl(get(), get()) }
+    factory<TracksRepository> { TracksRepositoryImpl(get()) }
 
-    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get(), get()) }
+    factory<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get()) }
 
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         val sharedPreferences =
             androidContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
         SettingsRepositoryImpl(sharedPreferences)
     }
 
     single<ExternalNavigator> { ExternalNavigatorImpl(get()) }
-    single<FavouriteTracksRepository> { FavouriteTracksRepositoryImpl(get(), get()) }
+    factory<FavouriteTracksRepository> { FavouriteTracksRepositoryImpl(get(), get()) }
 }
