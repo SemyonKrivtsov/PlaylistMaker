@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/playlistCover"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:contentDescription="@string/playlist_cover"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_track_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/playlistTitle"
+        style="@style/TrackTitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/playlistCover"
+        app:layout_constraintTop_toTopOf="@id/playlistCover"
+        tools:text="Мои любимые песни" />
+
+    <TextView
+        android:id="@+id/playlistTracksCount"
+        style="@style/TrackSubtitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/playlistCover"
+        app:layout_constraintTop_toBottomOf="@id/playlistTitle"
+        tools:text="3 трека" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
