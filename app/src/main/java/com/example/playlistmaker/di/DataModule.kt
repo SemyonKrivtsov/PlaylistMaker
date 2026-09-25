@@ -6,10 +6,13 @@ import androidx.room.Room
 import com.example.playlistmaker.R
 import com.example.playlistmaker.data.StorageClient
 import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.db.converters.PlaylistDBConvertor
+import com.example.playlistmaker.data.db.converters.PlaylistTrackDBConvertor
 import com.example.playlistmaker.data.db.converters.TrackDBConvertor
 import com.example.playlistmaker.data.search.NetworkClient
 import com.example.playlistmaker.data.search.network.ITunesApiService
 import com.example.playlistmaker.data.search.network.RetrofitNetworkClient
+import com.example.playlistmaker.data.storage.ImageStorage
 import com.example.playlistmaker.data.storage.PrefsStorageClient
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.domain.sharing.model.EmailData
@@ -50,6 +53,8 @@ val dataModule = module {
         )
     }
 
+    single { ImageStorage(androidContext()) }
+
     single {
         EmailData(
             email = androidContext().getString(R.string.email),
@@ -62,11 +67,15 @@ val dataModule = module {
         Room.databaseBuilder(
             androidContext(), AppDatabase::class.java,
             "playlistmaker.db"
-        )
-            .build()
+        ).fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
     }
 
     single { get<AppDatabase>().trackDao() }
+    single { get<AppDatabase>().playlistDao() }
+    single { get<AppDatabase>().playlistTrackDao() }
 
     factory { TrackDBConvertor() }
+    factory { PlaylistDBConvertor(get()) }
+    factory { PlaylistTrackDBConvertor() }
 }

@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -16,6 +20,7 @@ import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.example.playlistmaker.utils.TimeFormatter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -30,6 +35,13 @@ class PlayerFragment : Fragment() {
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(track)
     }
+
+    private val playlistAdapter = PlaylistRowAdapter { playlist ->
+        viewModel.onPlaylistClicked(playlist)
+    }
+
+    private var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
+    private var bottomSheetCallback: BottomSheetBehavior.BottomSheetCallback? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +78,66 @@ class PlayerFragment : Fragment() {
             renderFavourite(isFavourite)
         }
 
+        setUpBottomSheet()
+
+        viewModel.observePlaylists().observe(viewLifecycleOwner) { playlists ->
+            playlistAdapter.submitList(playlists)
+        }
+
+        viewModel.observeAddTrackResult().observe(viewLifecycleOwner) { result ->
+            renderAddTrackResult(result)
+        }
+
         viewModel.onViewCreated()
+    }
+
+    private fun setUpBottomSheet() {
+        binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.playlistsRecyclerView.adapter = playlistAdapter
+
+        val behavior = BottomSheetBehavior.from(binding.playlistsBottomSheet).apply {
+            isHideable = true
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        bottomSheetBehavior = behavior
+
+        val callback = object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                binding.overlay.isVisible = newState != BottomSheetBehavior.STATE_HIDDEN
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = (slideOffset + 1f) / 2f
+            }
+        }
+        bottomSheetCallback = callback
+        behavior.addBottomSheetCallback(callback)
+
+        binding.addToFavouriteButton.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.overlay.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.newPlaylistButton.setOnClickListener {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+        }
+    }
+
+    private fun renderAddTrackResult(result: AddTrackResult) {
+        val message = when (result) {
+            is AddTrackResult.Added -> {
+                bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
+                getString(R.string.added_to_playlist, result.playlistTitle)
+            }
+
+            is AddTrackResult.AlreadyAdded ->
+                getString(R.string.already_in_playlist, result.playlistTitle)
+        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {
@@ -76,6 +147,10 @@ class PlayerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        bottomSheetCallback?.let { bottomSheetBehavior?.removeBottomSheetCallback(it) }
+        bottomSheetCallback = null
+        bottomSheetBehavior = null
+        binding.playlistsRecyclerView.adapter = null
         _binding = null
     }
 

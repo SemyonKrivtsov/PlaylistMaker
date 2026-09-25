@@ -7,4 +7,6 @@
     <dimen name="image_padding">8dp</dimen>
     <dimen name="track_image_corner_radius">2dp</dimen>
     <dimen name="track_player_image_corner_radius">8dp</dimen>
+    <dimen name="playlist_cover_corner_radius">8dp</dimen>
+    <dimen name="playlist_item_corner_radius">8dp</dimen>
 </resources>
