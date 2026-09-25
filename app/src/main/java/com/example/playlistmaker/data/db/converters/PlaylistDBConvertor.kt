@@ -1,29 +1,27 @@
 package com.example.playlistmaker.data.db.converters
 
 import com.example.playlistmaker.data.db.entity.PlaylistEntity
+import com.example.playlistmaker.data.db.entity.PlaylistWithTracks
 import com.example.playlistmaker.domain.library.model.Playlist
-import com.google.gson.Gson
 
-class PlaylistDBConvertor(private val gson: Gson) {
+class PlaylistDBConvertor {
     fun map(playlist: Playlist): PlaylistEntity {
         return PlaylistEntity(
             id = playlist.id,
             title = playlist.title,
             description = playlist.description,
-            coverPath = playlist.coverPath,
-            trackIds = gson.toJson(playlist.trackIds),
-            trackCount = playlist.trackIds.size
+            coverPath = playlist.coverPath
         )
     }
 
-    fun map(playlistEntity: PlaylistEntity): Playlist {
+    fun map(playlistWithTracks: PlaylistWithTracks): Playlist {
+        val entity = playlistWithTracks.playlist
         return Playlist(
-            id = playlistEntity.id,
-            title = playlistEntity.title,
-            description = playlistEntity.description,
-            coverPath = playlistEntity.coverPath,
-            trackIds = (gson.fromJson(playlistEntity.trackIds, Array<Long>::class.java)
-                ?: emptyArray()).toList()
+            id = entity.id,
+            title = entity.title,
+            description = entity.description,
+            coverPath = entity.coverPath,
+            trackIds = playlistWithTracks.tracks.map { it.trackId }
         )
     }
 }

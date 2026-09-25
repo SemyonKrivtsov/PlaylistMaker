@@ -26,16 +26,15 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist) {
-        val updatedPlaylist = playlist.copy(trackIds = playlist.trackIds + track.trackId)
-        playlistDao.updatePlaylist(playlistDbConvertor.map(updatedPlaylist))
-        playlistTrackDao.insertPlaylistTrack(
-            playlistTrackDbConvertor.map(track, System.currentTimeMillis())
+        playlistTrackDao.addTrackToPlaylist(
+            track = playlistTrackDbConvertor.map(track, System.currentTimeMillis()),
+            playlistId = playlist.id
         )
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {
-        return playlistDao.getPlaylists()
+        return playlistDao.getPlaylistsWithTracks()
             .distinctUntilChanged()
-            .map { entities -> entities.map { playlistDbConvertor.map(it) } }
+            .map { playlists -> playlists.map { playlistDbConvertor.map(it) } }
     }
 }
