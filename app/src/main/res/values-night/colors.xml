@@ -11,4 +11,5 @@
     <color name="round_button_background">#535459</color>
     <color name="switch_track_on">#9FBBF3</color>
     <color name="bottom_nav_unselected">#FFFFFF</color>
+    <color name="text_field_playlist">#FFFFFF</color>
 </resources>
