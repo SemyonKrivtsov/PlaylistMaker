@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.PlaylistRowItemBinding
 import com.example.playlistmaker.domain.library.model.Playlist
 
@@ -15,13 +16,18 @@ class PlaylistRowAdapter(
         val binding = PlaylistRowItemBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return PlaylistRowViewHolder(binding)
+        val holder = PlaylistRowViewHolder(binding)
+        holder.itemView.setOnClickListener {
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onPlaylistClick(getItem(position))
+            }
+        }
+        return holder
     }
 
     override fun onBindViewHolder(holder: PlaylistRowViewHolder, position: Int) {
-        val playlist = getItem(position)
-        holder.bind(playlist)
-        holder.itemView.setOnClickListener { onPlaylistClick(playlist) }
+        holder.bind(getItem(position))
     }
 
     companion object {

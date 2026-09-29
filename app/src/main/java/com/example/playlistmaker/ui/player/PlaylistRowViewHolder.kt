@@ -6,6 +6,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistRowItemBinding
 import com.example.playlistmaker.domain.library.model.Playlist
+import com.example.playlistmaker.utils.TrackCountFormatter
 import java.io.File
 
 class PlaylistRowViewHolder(private val binding: PlaylistRowItemBinding) :
@@ -13,11 +14,8 @@ class PlaylistRowViewHolder(private val binding: PlaylistRowItemBinding) :
 
     fun bind(playlist: Playlist) {
         binding.playlistTitle.text = playlist.title
-        binding.playlistTracksCount.text = itemView.resources.getQuantityString(
-            R.plurals.tracks_count,
-            playlist.trackIds.size,
-            playlist.trackIds.size
-        )
+        binding.playlistTracksCount.text =
+            TrackCountFormatter.format(itemView.resources, playlist.trackIds.size)
 
         Glide.with(itemView)
             .load(playlist.coverPath?.let { File(it) })

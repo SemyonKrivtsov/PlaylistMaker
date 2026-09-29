@@ -12,4 +12,6 @@
     <color name="switch_track_on">#9FBBF3</color>
     <color name="bottom_nav_unselected">#FFFFFF</color>
     <color name="text_field_playlist">#FFFFFF</color>
+    <color name="bottom_sheet_handle">#FFFFFF</color>
+    <color name="playlist_row_subtitle">#FFFFFF</color>
 </resources>
