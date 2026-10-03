@@ -48,6 +48,10 @@ class ImageStorage(private val context: Context) {
             }
         }
 
+    suspend fun deleteImage(path: String) = withContext(Dispatchers.IO) {
+        File(path).delete()
+    }
+
     companion object {
         private const val COVERS_DIRECTORY = "playlist_covers"
         private const val COVER_QUALITY = 30

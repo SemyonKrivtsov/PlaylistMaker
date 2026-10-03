@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
@@ -21,12 +21,12 @@ import com.example.playlistmaker.ui.library.view_model.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
 
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
-    private val viewModel by viewModel<NewPlaylistViewModel>()
+    protected open val viewModel: NewPlaylistViewModel by viewModel()
 
     private val pickCoverLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -73,12 +73,7 @@ class NewPlaylistFragment : Fragment() {
         }
 
         viewModel.observePlaylistCreated().observe(viewLifecycleOwner) { name ->
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.dialog_created, name),
-                Toast.LENGTH_SHORT
-            ).show()
-            findNavController().navigateUp()
+            onPlaylistSaved(name)
         }
 
         viewModel.observeCreateError().observe(viewLifecycleOwner) {
@@ -108,15 +103,24 @@ class NewPlaylistFragment : Fragment() {
         binding.selectImage.background = null
 
         Glide.with(this)
-            .load(uri.toUri())
-            .centerCrop()
+            .load(uri)
             .transform(
+                CenterCrop(),
                 RoundedCorners(resources.getDimensionPixelSize(R.dimen.playlist_cover_corner_radius))
             )
             .into(binding.coverImage)
     }
 
-    private fun onBackAction() {
+    protected open fun onPlaylistSaved(name: String) {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.dialog_created, name),
+            Toast.LENGTH_SHORT
+        ).show()
+        findNavController().navigateUp()
+    }
+
+    protected open fun onBackAction() {
         if (viewModel.hasUnsavedData()) {
             showExitDialog()
         } else {

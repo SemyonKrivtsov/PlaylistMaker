@@ -8,6 +8,7 @@ import com.example.playlistmaker.domain.search.model.Track
 
 class TrackAdapter(
     private val tracks: List<Track>,
+    private val onTrackLongClick: ((Track) -> Unit)? = null,
     private val onTrackClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
@@ -20,6 +21,15 @@ class TrackAdapter(
             val position = holder.bindingAdapterPosition
             if (position != RecyclerView.NO_POSITION) {
                 onTrackClick(tracks[position])
+            }
+        }
+        if (onTrackLongClick != null) {
+            holder.itemView.setOnLongClickListener {
+                val position = holder.bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onTrackLongClick.invoke(tracks[position])
+                }
+                true
             }
         }
         return holder

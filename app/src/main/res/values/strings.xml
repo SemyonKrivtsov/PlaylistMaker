@@ -34,10 +34,10 @@
     <string name="description">Описание</string>
     <string name="create">Создать</string>
     <string name="dialog_delete_track">Хотите удалить трек?</string>
-    <string name="dialog_delete_playlist">Хотите удалить плейлист "%s"</string>
+    <string name="dialog_delete_playlist">Хотите удалить плейлист «%s»?</string>
     <string name="dialog_created">Плейлист %s создан</string>
-    <string name="yes">Да</string>
-    <string name="no">Нет</string>
+    <string name="yes">ДА</string>
+    <string name="no">НЕТ</string>
     <string name="dialog_finish_creating_title">Завершить создание плейлиста?</string>
     <string name="dialog_finish_creating_message">Все несохраненные данные будут потеряны</string>
     <string name="cancel">Отмена</string>
@@ -50,4 +50,14 @@
     <string name="tracks_count_many">%d треков</string>
     <string name="playlist_cover">Обложка плейлиста</string>
     <string name="create_playlist_error">Не удалось создать плейлист</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="playlist_info">%1$s • %2$s</string>
+    <string name="playlist_empty">В этом плейлисте нет треков</string>
+    <string name="playlist_nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="playlist_menu">Меню</string>
+    <string name="share_track_line">%1$d. %2$s - %3$s (%4$s)</string>
 </resources>

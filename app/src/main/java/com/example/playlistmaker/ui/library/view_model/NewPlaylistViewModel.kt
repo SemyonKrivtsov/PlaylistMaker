@@ -10,18 +10,18 @@ import com.example.playlistmaker.utils.SingleLiveEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-class NewPlaylistViewModel(
-    private val playlistInteractor: PlaylistInteractor
+open class NewPlaylistViewModel(
+    protected val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
-    private var title: String = ""
-    private var description: String = ""
-    private var isCreating = false
+    protected var title: String = ""
+    protected var description: String = ""
+    protected var isCreating = false
 
-    private val coverUriLiveData = MutableLiveData<String?>(null)
+    protected val coverUriLiveData = MutableLiveData<String?>(null)
     private val isCreateAvailableLiveData = MutableLiveData(false)
-    private val playlistCreatedLiveData = SingleLiveEvent<String>()
-    private val createErrorLiveData = SingleLiveEvent<Unit>()
+    protected val playlistCreatedLiveData = SingleLiveEvent<String>()
+    protected val createErrorLiveData = SingleLiveEvent<Unit>()
 
     fun observeCoverUri(): LiveData<String?> = coverUriLiveData
     fun observeCreateAvailable(): LiveData<Boolean> = isCreateAvailableLiveData
@@ -44,7 +44,7 @@ class NewPlaylistViewModel(
     fun hasUnsavedData(): Boolean =
         title.isNotBlank() || description.isNotBlank() || coverUriLiveData.value != null
 
-    fun createPlaylist() {
+    open fun createPlaylist() {
         val name = title.trim()
         if (name.isEmpty() || isCreating) return
         isCreating = true
