@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
@@ -177,8 +178,7 @@ class PlayerFragment : Fragment() {
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.ic_track_placeholder)
-            .centerCrop()
-            .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
+            .transform(CenterCrop(), RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(binding.trackImage)
     }
 

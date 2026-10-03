@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.ui.library.view_model.PlaylistsViewModel
+import com.example.playlistmaker.ui.playlist.PlaylistFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -19,7 +21,12 @@ class PlaylistsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<PlaylistsViewModel>()
-    private val playlistAdapter = PlaylistGridAdapter()
+    private val playlistAdapter = PlaylistGridAdapter { playlist ->
+        findNavController().navigate(
+            R.id.action_libraryFragment_to_playlistFragment,
+            bundleOf(PlaylistFragment.ARG_PLAYLIST_ID to playlist.id)
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

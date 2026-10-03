@@ -9,4 +9,5 @@
     <dimen name="track_player_image_corner_radius">8dp</dimen>
     <dimen name="playlist_cover_corner_radius">8dp</dimen>
     <dimen name="playlist_item_corner_radius">8dp</dimen>
+    <dimen name="playlist_tracks_sheet_margin">24dp</dimen>
 </resources>
