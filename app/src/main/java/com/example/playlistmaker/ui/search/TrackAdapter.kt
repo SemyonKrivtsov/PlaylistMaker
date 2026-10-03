@@ -15,15 +15,18 @@ class TrackAdapter(
         val binding = TrackViewBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return TrackViewHolder(binding)
+        val holder = TrackViewHolder(binding)
+        holder.itemView.setOnClickListener {
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onTrackClick(tracks[position])
+            }
+        }
+        return holder
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        val track = tracks[position]
-        holder.bind(track)
-        holder.itemView.setOnClickListener {
-            onTrackClick(track)
-        }
+        holder.bind(tracks[position])
     }
 
     override fun getItemCount(): Int = tracks.size

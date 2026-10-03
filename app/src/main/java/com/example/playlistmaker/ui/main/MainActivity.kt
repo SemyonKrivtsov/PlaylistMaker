@@ -33,9 +33,14 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val isBottomNavVisible = destination.id != R.id.playerFragment
+            val isBottomNavVisible = destination.id !in FULLSCREEN_DESTINATIONS
             binding.bottomNavigation.isVisible = isBottomNavVisible
             binding.bottomNavigationLine.isVisible = isBottomNavVisible
         }
+    }
+
+    companion object {
+        private val FULLSCREEN_DESTINATIONS =
+            setOf(R.id.playerFragment, R.id.newPlaylistFragment)
     }
 }
