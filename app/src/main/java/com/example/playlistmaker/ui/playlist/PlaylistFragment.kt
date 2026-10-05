@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -19,8 +19,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
 import com.example.playlistmaker.domain.library.model.Playlist
 import com.example.playlistmaker.domain.search.model.Track
-import com.example.playlistmaker.ui.library.EditPlaylistFragment
-import com.example.playlistmaker.ui.player.PlayerFragment
 import com.example.playlistmaker.ui.playlist.view_model.PlaylistViewModel
 import com.example.playlistmaker.ui.search.TrackAdapter
 import com.example.playlistmaker.utils.TrackCountFormatter
@@ -35,8 +33,8 @@ class PlaylistFragment : Fragment() {
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
 
-    private val playlistId: Long by lazy { requireArguments().getLong(ARG_PLAYLIST_ID) }
-    private val viewModel by viewModel<PlaylistViewModel> { parametersOf(playlistId) }
+    private val args: PlaylistFragmentArgs by navArgs()
+    private val viewModel by viewModel<PlaylistViewModel> { parametersOf(args.playlistId) }
 
     private val tracks = mutableListOf<Track>()
     private val trackAdapter = TrackAdapter(
@@ -76,6 +74,7 @@ class PlaylistFragment : Fragment() {
         }
 
         viewModel.observeState().observe(viewLifecycleOwner) { render(it) }
+        viewModel.loadPlaylist()
 
         viewModel.observeNothingToShare().observe(viewLifecycleOwner) {
             Toast.makeText(
@@ -144,8 +143,7 @@ class PlaylistFragment : Fragment() {
         binding.menuEdit.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
             findNavController().navigate(
-                R.id.action_playlistFragment_to_editPlaylistFragment,
-                bundleOf(EditPlaylistFragment.ARG_PLAYLIST_ID to playlistId)
+                PlaylistFragmentDirections.actionPlaylistFragmentToEditPlaylistFragment(args.playlistId)
             )
         }
 
@@ -213,8 +211,7 @@ class PlaylistFragment : Fragment() {
     private fun onTrackClick(track: Track) {
         if (viewModel.clickDebounce()) {
             findNavController().navigate(
-                R.id.action_playlistFragment_to_playerFragment,
-                bundleOf(PlayerFragment.ARG_TRACK to track)
+                PlaylistFragmentDirections.actionPlaylistFragmentToPlayerFragment(track)
             )
         }
     }
@@ -237,7 +234,6 @@ class PlaylistFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_PLAYLIST_ID = "playlistId"
         private const val MIN_PEEK_MARGINS = 4
     }
 }

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -15,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.search.model.Track
-import com.example.playlistmaker.ui.player.PlayerFragment
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -166,8 +164,7 @@ class SearchFragment : Fragment() {
         if (viewModel.clickDebounce()) {
             viewModel.addTrackToHistory(track)
             findNavController().navigate(
-                R.id.action_searchFragment_to_playerFragment,
-                bundleOf(PlayerFragment.ARG_TRACK to track)
+                SearchFragmentDirections.actionSearchFragmentToPlayerFragment(track)
             )
         }
     }

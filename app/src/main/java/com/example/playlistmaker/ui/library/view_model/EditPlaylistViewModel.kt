@@ -6,21 +6,24 @@ import com.example.playlistmaker.domain.library.PlaylistInteractor
 import com.example.playlistmaker.domain.library.model.Playlist
 import com.example.playlistmaker.utils.SingleLiveEvent
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class EditPlaylistViewModel(
-    playlistId: Long,
+    private val playlistId: Long,
     playlistInteractor: PlaylistInteractor
 ) : NewPlaylistViewModel(playlistInteractor) {
 
+    private var loadJob: Job? = null
     private var editedPlaylist: Playlist? = null
     private val playlistLoadedEvent = SingleLiveEvent<Playlist>()
 
     fun observePlaylistLoaded(): LiveData<Playlist> = playlistLoadedEvent
 
-    init {
-        viewModelScope.launch {
+    fun loadPlaylist() {
+        if (loadJob != null) return
+        loadJob = viewModelScope.launch {
             val playlist = playlistInteractor.getPlaylistById(playlistId).first() ?: return@launch
             editedPlaylist = playlist
             coverUriLiveData.value = playlist.coverPath

@@ -10,6 +10,7 @@ import com.example.playlistmaker.domain.sharing.SharingInteractor
 import com.example.playlistmaker.ui.playlist.PlaylistScreenState
 import com.example.playlistmaker.ui.playlist.PlaylistShareTextFormatter
 import com.example.playlistmaker.utils.SingleLiveEvent
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -23,6 +24,7 @@ class PlaylistViewModel(
     private val shareTextFormatter: PlaylistShareTextFormatter
 ) : ViewModel() {
 
+    private var playlistJob: Job? = null
     private var isClickAllowed = true
     private var isDeleting = false
 
@@ -34,8 +36,9 @@ class PlaylistViewModel(
     fun observeNothingToShare(): LiveData<Unit> = nothingToShareEvent
     fun observePlaylistDeleted(): LiveData<Unit> = playlistDeletedEvent
 
-    init {
-        viewModelScope.launch {
+    fun loadPlaylist() {
+        if (playlistJob != null) return
+        playlistJob = viewModelScope.launch {
             combine(
                 playlistInteractor.getPlaylistById(playlistId).filterNotNull(),
                 playlistInteractor.getPlaylistTracks(playlistId)
