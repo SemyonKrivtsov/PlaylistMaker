@@ -41,6 +41,11 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val FULLSCREEN_DESTINATIONS =
-            setOf(R.id.playerFragment, R.id.newPlaylistFragment)
+            setOf(
+                R.id.playerFragment,
+                R.id.newPlaylistFragment,
+                R.id.playlistFragment,
+                R.id.editPlaylistFragment
+            )
     }
 }

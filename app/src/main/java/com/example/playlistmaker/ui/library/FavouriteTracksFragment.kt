@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentFavouriteTracksBinding
 import com.example.playlistmaker.domain.search.model.Track
 import com.example.playlistmaker.ui.library.view_model.FavouriteTracksViewModel
-import com.example.playlistmaker.ui.player.PlayerFragment
 import com.example.playlistmaker.ui.search.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,8 +25,7 @@ class FavouriteTracksFragment : Fragment() {
     private fun onTrackClick(track: Track) {
         if (viewModel.clickDebounce()) {
             findNavController().navigate(
-                R.id.action_libraryFragment_to_playerFragment,
-                bundleOf(PlayerFragment.ARG_TRACK to track)
+                LibraryFragmentDirections.actionLibraryFragmentToPlayerFragment(track)
             )
         }
     }

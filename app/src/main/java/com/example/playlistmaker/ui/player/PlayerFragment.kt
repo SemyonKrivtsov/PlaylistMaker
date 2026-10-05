@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
@@ -29,9 +30,8 @@ class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
 
-    private val track: Track by lazy {
-        BundleCompat.getParcelable(requireArguments(), ARG_TRACK, Track::class.java)!!
-    }
+    private val args: PlayerFragmentArgs by navArgs()
+    private val track: Track get() = args.track
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(track)
     }
@@ -123,7 +123,9 @@ class PlayerFragment : Fragment() {
 
         binding.newPlaylistButton.setOnClickListener {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
-            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+            findNavController().navigate(
+                PlayerFragmentDirections.actionPlayerFragmentToNewPlaylistFragment()
+            )
         }
     }
 
@@ -177,8 +179,7 @@ class PlayerFragment : Fragment() {
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.ic_track_placeholder)
-            .centerCrop()
-            .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
+            .transform(CenterCrop(), RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
             .into(binding.trackImage)
     }
 
@@ -205,9 +206,5 @@ class PlayerFragment : Fragment() {
                 if (isFavourite) R.color.like_active else R.color.white
             )
         )
-    }
-
-    companion object {
-        const val ARG_TRACK = "track"
     }
 }

@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.ui.library.view_model.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -19,7 +18,11 @@ class PlaylistsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<PlaylistsViewModel>()
-    private val playlistAdapter = PlaylistGridAdapter()
+    private val playlistAdapter = PlaylistGridAdapter { playlist ->
+        findNavController().navigate(
+            LibraryFragmentDirections.actionLibraryFragmentToPlaylistFragment(playlist.id)
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +39,9 @@ class PlaylistsFragment : Fragment() {
         binding.playlistsRecyclerView.adapter = playlistAdapter
 
         binding.newPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_libraryFragment_to_newPlaylistFragment)
+            findNavController().navigate(
+                LibraryFragmentDirections.actionLibraryFragmentToNewPlaylistFragment()
+            )
         }
 
         viewModel.observeState().observe(viewLifecycleOwner) { render(it) }
