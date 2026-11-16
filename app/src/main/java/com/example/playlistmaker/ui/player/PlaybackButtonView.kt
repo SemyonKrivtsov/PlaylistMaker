@@ -7,6 +7,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.drawable.toBitmap
 import com.example.playlistmaker.R
@@ -29,6 +30,8 @@ class PlaybackButtonView @JvmOverloads constructor(
             playBitmap = getDrawable(R.styleable.PlaybackButtonView_playImage)?.toBitmap()
             pauseBitmap = getDrawable(R.styleable.PlaybackButtonView_pauseImage)?.toBitmap()
         }
+        isClickable = true
+        updateContentDescription()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -57,9 +60,18 @@ class PlaybackButtonView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
+    override fun getAccessibilityClassName(): CharSequence = Button::class.java.name
+
     fun setPlaying(playing: Boolean) {
         if (isPlaying == playing) return
         isPlaying = playing
+        updateContentDescription()
         invalidate()
+    }
+
+    private fun updateContentDescription() {
+        contentDescription = context.getString(
+            if (isPlaying) R.string.playback_pause else R.string.playback_play
+        )
     }
 }
