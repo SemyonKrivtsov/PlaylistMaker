@@ -60,4 +60,6 @@
     <string name="playlist_nothing_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
     <string name="playlist_menu">Меню</string>
     <string name="share_track_line">%1$d. %2$s - %3$s (%4$s)</string>
+    <string name="playback_play">Воспроизвести</string>
+    <string name="playback_pause">Пауза</string>
 </resources>

@@ -186,13 +186,7 @@ class PlayerFragment : Fragment() {
     private fun render(state: PlayerState) {
         binding.playbackTime.text = state.progress
 
-        binding.playButton.setImageResource(
-            if (state is PlayerState.Playing) {
-                R.drawable.ic_pause_100
-            } else {
-                R.drawable.ic_play_100
-            }
-        )
+        binding.playButton.setPlaying(state is PlayerState.Playing)
         binding.playButton.isEnabled = state !is PlayerState.Default
     }
 
