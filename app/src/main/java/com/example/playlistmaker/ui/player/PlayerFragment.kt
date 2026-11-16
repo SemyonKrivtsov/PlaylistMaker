@@ -1,15 +1,23 @@
 package com.example.playlistmaker.ui.player
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +27,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.domain.search.model.Track
+import com.example.playlistmaker.ui.player.service.MusicService
 import com.example.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.example.playlistmaker.utils.TimeFormatter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -40,8 +49,36 @@ class PlayerFragment : Fragment() {
         viewModel.onPlaylistClicked(playlist)
     }
 
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
+    private val activityLifecycleObserver = LifecycleEventObserver { _, event ->
+        when (event) {
+            Lifecycle.Event.ON_START -> viewModel.onUiStarted()
+            Lifecycle.Event.ON_STOP -> {
+                val activity = requireActivity()
+                if (!activity.isChangingConfigurations && !activity.isFinishing) {
+                    viewModel.onUiStopped()
+                }
+            }
+
+            else -> Unit
+        }
+    }
+
     private var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
     private var bottomSheetCallback: BottomSheetBehavior.BottomSheetCallback? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState == null && !hasNotificationPermission()) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        if (!viewModel.isServiceBound) {
+            bindMusicService()
+        }
+        requireActivity().lifecycle.addObserver(activityLifecycleObserver)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +127,33 @@ class PlayerFragment : Fragment() {
 
         viewModel.onViewCreated()
     }
+
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra(MusicService.EXTRA_TRACK_URL, track.previewUrl)
+            putExtra(MusicService.EXTRA_ARTIST_NAME, track.artistName)
+            putExtra(MusicService.EXTRA_TRACK_NAME, track.trackName)
+        }
+
+        viewModel.isServiceBound = requireContext().applicationContext.bindService(
+            intent,
+            viewModel.serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
+    }
+
+    private fun unbindMusicService() {
+        if (!viewModel.isServiceBound) return
+        requireContext().applicationContext.unbindService(viewModel.serviceConnection)
+        viewModel.isServiceBound = false
+    }
+
+    private fun hasNotificationPermission(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
 
     private fun setUpBottomSheet() {
         binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -142,11 +206,6 @@ class PlayerFragment : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         bottomSheetCallback?.let { bottomSheetBehavior?.removeBottomSheetCallback(it) }
@@ -154,6 +213,15 @@ class PlayerFragment : Fragment() {
         bottomSheetBehavior = null
         binding.playlistsRecyclerView.adapter = null
         _binding = null
+    }
+
+    override fun onDestroy() {
+        requireActivity().lifecycle.removeObserver(activityLifecycleObserver)
+
+        if (!requireActivity().isChangingConfigurations) {
+            unbindMusicService()
+        }
+        super.onDestroy()
     }
 
     private fun bindTrack(track: Track) {
@@ -179,7 +247,10 @@ class PlayerFragment : Fragment() {
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.ic_track_placeholder)
-            .transform(CenterCrop(), RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius)))
+            .transform(
+                CenterCrop(),
+                RoundedCorners(resources.getDimensionPixelSize(R.dimen.track_player_image_corner_radius))
+            )
             .into(binding.trackImage)
     }
 
